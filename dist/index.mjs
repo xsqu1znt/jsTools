@@ -590,3 +590,4 @@ var index_default = {
 export {
   index_default as default
 };
+module.exports = module.exports.default;

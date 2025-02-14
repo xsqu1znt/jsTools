@@ -617,3 +617,4 @@ var index_default = {
   ...random_exports,
   ...string_exports
 };
+module.exports = module.exports.default;
