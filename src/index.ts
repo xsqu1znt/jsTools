@@ -17,3 +17,14 @@ export default {
     ...__random,
     ...__string
 };
+
+module.exports = {
+    ...__async,
+    ...__array,
+    ...__date,
+    ...__file,
+    ...__number,
+    ...__object,
+    ...__random,
+    ...__string
+};

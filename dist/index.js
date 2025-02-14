@@ -617,3 +617,13 @@ var index_default = {
   ...random_exports,
   ...string_exports
 };
+module.exports = {
+  ...async_exports,
+  ...array_exports,
+  ...date_exports,
+  ...file_exports,
+  ...number_exports,
+  ...object_exports,
+  ...random_exports,
+  ...string_exports
+};
