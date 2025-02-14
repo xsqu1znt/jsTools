@@ -1,0 +1,19 @@
+{
+    "name": "jstools",
+    "version": "0.0.1",
+    "description": "",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsup"
+    },
+    "keywords": [],
+    "author": "xsqu1znt",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/node": "^22.13.4",
+        "tsup": "^8.3.6",
+        "typescript": "^5.7.3"
+    }
+}
