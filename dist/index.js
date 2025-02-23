@@ -440,7 +440,7 @@ function unique(arr, prop, copy = false) {
 }
 function forceArray(item, options) {
   let itemArray = Array.isArray(item) ? item : [item];
-  if (options?.filterFalsey) itemArray = itemArray.filter(Boolean);
+  if (options?.filter) itemArray = itemArray.filter((i) => i !== void 0 && i !== null);
   if (options?.copy) itemArray = structuredClone(itemArray);
   return itemArray;
 }

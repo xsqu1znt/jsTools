@@ -1,9 +1,17 @@
 export type ForcedArray<T> = T extends any[] ? T : T[];
+export type NonNullableForcedArray<T> = T extends any[]
+    ? T[number] extends infer U
+        ? U extends null | undefined
+            ? never
+            : U
+        : never
+    : NonNullable<T>[];
+
 export interface ForceArrayOptions {
     /** Return a deep copy of the array using {@link structuredClone}. */
     copy?: boolean;
-    /** Remove falsey values from the array. */
-    filterFalsey?: boolean;
+    /** Remove undefined and null values from the array. */
+    filter?: boolean;
 }
 
 export type BetterMapCallback<T extends any[]> = (
@@ -88,11 +96,13 @@ export function unique<T extends any[]>(arr: T, prop?: string, copy: boolean = f
 /** Convert the given item into an array if it is not already.
  * @param item The item to be converted into an array.
  * @param options Optional settings for the conversion. */
-export function forceArray<T>(item: T, options?: ForceArrayOptions): ForcedArray<T> {
+export function forceArray<T>(item: T, options: ForceArrayOptions & { filter: true }): NonNullableForcedArray<T>;
+export function forceArray<T>(item: T, options: ForceArrayOptions & { filter?: boolean }): ForcedArray<T>;
+export function forceArray<T>(item: T, options?: ForceArrayOptions) {
     let itemArray = Array.isArray(item) ? item : [item];
-    if (options?.filterFalsey) itemArray = itemArray.filter(Boolean);
+    if (options?.filter) itemArray = itemArray.filter(i => i !== undefined && i !== null);
     if (options?.copy) itemArray = structuredClone(itemArray);
-    return itemArray as ForcedArray<T>;
+    return itemArray as any;
 }
 
 /** Similar to {@link Array.prototype.map}, but gives the callback access to the new array being constructed.

@@ -45,11 +45,12 @@ declare class LoopInterval<T extends LoopIntervalCallback> {
 }
 
 type ForcedArray<T> = T extends any[] ? T : T[];
+type NonNullableForcedArray<T> = T extends any[] ? T[number] extends infer U ? U extends null | undefined ? never : U : never : NonNullable<T>[];
 interface ForceArrayOptions {
     /** Return a deep copy of the array using {@link structuredClone}. */
     copy?: boolean;
-    /** Remove falsey values from the array. */
-    filterFalsey?: boolean;
+    /** Remove undefined and null values from the array. */
+    filter?: boolean;
 }
 type BetterMapCallback<T extends any[]> = (item: T[number], extra: {
     idx: number;
@@ -96,7 +97,12 @@ declare function unique<T extends any[]>(arr: T, prop?: string, copy?: boolean):
 /** Convert the given item into an array if it is not already.
  * @param item The item to be converted into an array.
  * @param options Optional settings for the conversion. */
-declare function forceArray<T>(item: T, options?: ForceArrayOptions): ForcedArray<T>;
+declare function forceArray<T>(item: T, options: ForceArrayOptions & {
+    filter: true;
+}): NonNullableForcedArray<T>;
+declare function forceArray<T>(item: T, options: ForceArrayOptions & {
+    filter?: boolean;
+}): ForcedArray<T>;
 /** Similar to {@link Array.prototype.map}, but gives the callback access to the new array being constructed.
  * @param arr The array to map over.
  * @param callback The callback to run on each item in the array.
@@ -291,4 +297,4 @@ type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type ParseTimeOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatThousands, getProp, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type NonNullableForcedArray, type ParseTimeOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatThousands, getProp, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
