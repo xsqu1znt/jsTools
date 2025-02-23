@@ -1,5 +1,5 @@
-import __object from "./object";
-import __array from "./array";
+import { getProp } from "./object";
+import { betterMap } from "./array";
 
 // prettier-ignore
 const alphabet = [
@@ -77,8 +77,8 @@ export function choiceIndex(arr: any[]): number {
  * @param copy Whether to return a copy of the chosen item. Default is `false`. */
 export function choiceWeighted<T extends any[]>(arr: T, path = "", copy = false): T[number] {
     // Calculate the weight of each element in the array
-    let weights = __array.betterMap(arr, (item, { lastElement }) => {
-        const prop: any = path ? __object.getProp(item, path) : item;
+    let weights = betterMap(arr, (item, { lastElement }) => {
+        const prop: any = path ? getProp(item, path) : item;
         if (typeof prop !== "number") throw new TypeError(`\`${path}\` must lead to a number property in the array`);
         return (prop as number) + (lastElement || 0);
     });
@@ -91,5 +91,3 @@ export function choiceWeighted<T extends any[]>(arr: T, path = "", copy = false)
     const item = arr[weights.findIndex(w => w >= decider)];
     return copy ? structuredClone(item) : item;
 }
-
-export default { randomNumber, numberString, alphaString, alphaNumbericString, chance, choice, choiceIndex, choiceWeighted };

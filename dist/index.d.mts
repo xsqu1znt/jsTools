@@ -20,11 +20,11 @@ declare class LoopInterval<T extends LoopIntervalCallback> {
      * @param delay The time to wait before running the function again.
      * @param immediate Whether to run the function immediately after initialization. Defaults to `true`.
      *
-     * This parameter utilizes {@link __date.parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
     constructor(fn: T, delay: string | number, immediate?: boolean);
     /** Change the delay of the loop.
      * @param delay The delay.
-     * This parameter utilizes {@link __date.parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
     setDelay(delay: string | number): this;
     /** Start the loop if it was stopped.
      * @param immediate Whether to start immediately. */
@@ -163,12 +163,12 @@ declare function etaHMS(unix: number | string, options?: ETAOptions): string | n
  * @param unix The Unix timestamp in milliseconds for which the time difference is calculated.
  * @param options An optional object to configure the behavior of the function.
  *
- * @copyright *Code written by **@fujimori_*** */
+ * @copyright *Utility created by **@fujimori_*** */
 declare function etaYMDHMS(unix: number | string, options?: ETAOptions): string | null;
 /**Format a Unix timestamp into a dynamic "DD:HH:MM:SS" time string format.
  * @param unix The Unix timestamp in milliseconds to convert.
  * @param options An optional object to configure the behavior of the function.
- * @copyright *Code written by **@fujimori_*** */
+ * @copyright *Utility created by **@fujimori_*** */
 declare function etaDigital(unix: number | string, options?: ETAOptions): string | null;
 
 interface ReadDirOptions {
@@ -221,22 +221,27 @@ declare function formatThousands(num: number, sep?: string): string;
 /** Format a number into a short, human-readable string.
  * @param num The number to format.
  * @param units Custom unit names to use.
- *
  * @example
  * formatNumber(1000) -> "1k"
  * formatNumber(1000000) -> "1mil"
  * formatNumber(1000000000) -> "1bil"
- * formatNumber(1000, [" thou", " mill", " bill"]) -> "1 thou" */
+ * formatNumber(1000, [" thou", " mill", " bill"]) -> "1 thou"
+ * @copyright *Utility modified by **@fujimori_***  */
 declare function formatLargeNumber(num: number, units?: [string, string, string]): string;
-/** Add the ordinal place to the end of a given number.
- * @param num The number to add the ordinal to.
- *
+/** Format a number to an ordinal number (e.g. 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th").
+ * @param input The number to format.
+ * @param useLocale Whether to use the user's locale for formatting the number.
+ * @copyright *Utility modified by **@fujimori_*** */
+declare function toOrdinal(input: number | string, useLocale?: boolean): string;
+/** Format a memory size in bytes into a human-readable string.
+ * @param bytes The number of bytes to format.
+ * @param decimals The number of decimal places to round the result to.
  * @example
- * ordinal(1) -> "1st"
- * ordinal(2) -> "2nd"
- * ordinal(3) -> "3rd"
- * ordinal(4) -> "4th" */
-declare function toOrdinal(num: number): string;
+ * formatMemory(1024) --> "1.0 KB"
+ * formatMemory(1024000) --> "1.0 MB"
+ * @copyright *Utility created by **@fujimori_***
+ * @returns A human-readable representation of the memory size. */
+declare function formatMemory(bytes: number, decimals?: number, units?: [string, string, string, string, string, string, string, string, string]): string;
 
 /** Return a nested property from a given object using the provided path.
  *
@@ -297,4 +302,4 @@ type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type NonNullableForcedArray, type ParseTimeOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatThousands, getProp, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type NonNullableForcedArray, type ParseTimeOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };

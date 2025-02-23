@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "node:fs";
 
 export interface ReadDirOptions {
     /** Return nested files inside of the directory. */
@@ -33,5 +33,3 @@ export function readDir(path: string, options?: ReadDirOptions): string[] {
 
     return walk(path);
 }
-
-export default { readDir };

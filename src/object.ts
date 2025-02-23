@@ -50,5 +50,3 @@ export function getProp(obj: {}, path: string): any {
 
     return _obj;
 }
-
-export default { getProp };

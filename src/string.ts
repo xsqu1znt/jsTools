@@ -9,5 +9,3 @@ export function toTitleCase(str: string): string {
 export function toLeet(str: string): string {
     return str.replace(/a|A/g, "4").replace(/e|E/g, "3").replace(/i|I/g, "1").replace(/o|O/g, "0").replace(/t|T/g, "7");
 }
-
-export default { toTitleCase, toLeet };

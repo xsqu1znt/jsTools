@@ -34,7 +34,7 @@ export type ToMapCallback<T extends any[]> = (
     }
 ) => { key: any; value: any };
 
-import * as __object from "./object";
+import { getProp } from "./object";
 
 /** Split an array into groups that don't exceed the given size.
  * @param {array} arr The array to split.
@@ -81,7 +81,7 @@ export function unique<T extends any[]>(arr: T, prop?: string, copy: boolean = f
     const referenceMap = new Map();
 
     for (let item of arr) {
-        let property = typeof item === "object" && prop ? __object.getProp(item, prop) : item;
+        let property = typeof item === "object" && prop ? getProp(item, prop) : item;
 
         // Check if the reference map already has this property
         if (!referenceMap.has(property)) {
@@ -139,5 +139,3 @@ export function toMap<T extends any[]>(arr: T, callback: ToMapCallback<T>, copy 
 
     return mapNew;
 }
-
-export default { chunk, unique, forceArray, betterMap, toMap };

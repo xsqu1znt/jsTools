@@ -46,6 +46,7 @@ __export(index_exports, {
   etaYMDHMS: () => etaYMDHMS,
   forceArray: () => forceArray,
   formatLargeNumber: () => formatLargeNumber,
+  formatMemory: () => formatMemory,
   formatThousands: () => formatThousands,
   getProp: () => getProp,
   msToSec: () => msToSec,
@@ -87,12 +88,11 @@ function getProp(obj, path) {
   }
   return _obj;
 }
-var object_default = { getProp };
 
 // src/number.ts
 function sum(arr, path = "", ignoreNaN = false) {
   const _path = path.trim();
-  const _arr = _path ? arr.map((a) => Number(object_default.getProp(a, _path))) : arr;
+  const _arr = _path ? arr.map((a) => Number(getProp(a, _path))) : arr;
   return _arr.reduce((a, b) => {
     const invalid = isNaN(b) && !ignoreNaN;
     if (invalid) throw new TypeError(`'${b}' is not a valid number`);
@@ -118,23 +118,31 @@ function msToSec(ms, round = true) {
 function formatThousands(num, sep = ",") {
   return `${num}`.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, sep);
 }
-function formatLargeNumber(num, units = ["k", "mil", "bil"]) {
-  const _units = ["", ...units];
-  let index = 0;
-  while (Math.abs(num) >= 1e3 && index < _units.length - 1) {
-    num /= 1e3;
-    index++;
-  }
-  let result = num.toFixed(1).replace(/\.0$/, "");
-  if (result.slice(-1) === "0") result = result.slice(0, -1);
-  return result + _units[index];
+function formatLargeNumber(num, units = ["k", "M", "B"]) {
+  if (num < 1e3) return num.toString();
+  const i = Math.floor(Math.log10(num) / 3);
+  const val = num / Math.pow(1e3, i);
+  return val.toFixed(val >= 10 ? 1 : 2).replace(/\.0+$/, "").replace(/\.$/, "") + units[i - 1];
 }
-function toOrdinal(num) {
-  const endings = ["th", "st", "nd", "rd"];
-  const mod = num % 100;
-  return `${num}${endings[(mod - 20) % 10] || endings[mod] || endings[0]}`;
+function toOrdinal(input, useLocale = false) {
+  const num = typeof input === "string" ? parseFloat(input) : Number(input);
+  if (isNaN(num)) throw TypeError("Invalid input");
+  const suffix = ["st", "nd", "rd"][(num % 10 + 10) % 10 - 1] || "th";
+  return (useLocale ? num.toLocaleString() : num.toString()) + suffix;
 }
-var number_default = { sum, clamp, percent, secToMs, msToSec, formatThousands, formatLargeNumber, toOrdinal };
+function formatMemory(bytes, decimals = 1, units = [
+  "B",
+  "KB",
+  "MB",
+  "GB",
+  "TB",
+  "PB",
+  "EB",
+  "ZB",
+  "YB"
+]) {
+  return `${(bytes / Math.pow(1024, Math.floor(Math.log2(bytes / 1024)))).toFixed(decimals)} ${units[Math.floor(Math.log2(bytes / 1024))]}`;
+}
 
 // src/date.ts
 function parseTime(str, options) {
@@ -178,7 +186,7 @@ function parseTime(str, options) {
     sum2 += _parsed;
   }
   if (_options.fromNow) isNegative ? sum2 = Date.now() - sum2 : sum2 = Date.now() + sum2;
-  if (_options.type === "s") sum2 = number_default.msToSec(sum2);
+  if (_options.type === "s") sum2 = msToSec(sum2);
   if (!_options.fromNow && isNegative) sum2 = -sum2;
   return sum2;
 }
@@ -230,7 +238,7 @@ function etaHMS(unix, options) {
   let difference = Math.abs(_unix - _options.since);
   if (!difference && _options.nullIfPast) return null;
   if (!difference) return "now";
-  const seconds = number_default.msToSec(difference);
+  const seconds = msToSec(difference);
   const h = Math.floor(seconds / 3600);
   const m = Math.floor(seconds % 3600 / 60);
   const s = Math.floor(seconds % 3600 % 60);
@@ -258,7 +266,7 @@ function etaYMDHMS(unix, options) {
   let difference = Math.abs(_unix - _options.since);
   if (!difference && _options.nullIfPast) return null;
   if (!difference) return "now";
-  const seconds = number_default.msToSec(difference);
+  const seconds = msToSec(difference);
   const y = Math.floor(seconds / 31536e3);
   const mo = Math.floor(seconds % 31536e3 / 2628e3);
   const d = Math.floor(seconds % 31536e3 % 2628e3 / 86400);
@@ -303,7 +311,7 @@ function etaDigital(unix, options) {
   let difference = Math.abs(_unix - _options.since);
   if (!difference && _options.nullIfPast) return null;
   if (!difference) return "now";
-  const seconds = number_default.msToSec(difference);
+  const seconds = msToSec(difference);
   let d = Math.floor(seconds % 31536e3 / 86400);
   let h = Math.floor(seconds % (3600 * 24) / 3600);
   let m = Math.floor(seconds % 3600 / 60);
@@ -324,11 +332,10 @@ function etaDigital(unix, options) {
   result = result.filter((f) => f);
   return result.join(":");
 }
-var date_default = { parseTime, eta, etaHMS, etaYMDHMS, etaDigital };
 
 // src/async.ts
 async function sleep(ms) {
-  return await (0, import_promises.setTimeout)(date_default.parseTime(ms));
+  return await (0, import_promises.setTimeout)(parseTime(ms));
 }
 var LoopInterval = class {
   running = false;
@@ -340,9 +347,9 @@ var LoopInterval = class {
    * @param delay The time to wait before running the function again.
    * @param immediate Whether to run the function immediately after initialization. Defaults to `true`.
    *
-   * This parameter utilizes {@link __date.parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+   * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
   constructor(fn, delay, immediate = true) {
-    this.delay = date_default.parseTime(delay);
+    this.delay = parseTime(delay);
     const main = async () => {
       if (!this.running) return this.__eventEmitter.emit("stop");
       this.EventEmitter.emit("executed", await fn(this));
@@ -375,9 +382,9 @@ var LoopInterval = class {
   }
   /** Change the delay of the loop.
    * @param delay The delay.
-   * This parameter utilizes {@link __date.parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+   * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
   setDelay(delay) {
-    this.delay = date_default.parseTime(delay);
+    this.delay = parseTime(delay);
     return this;
   }
   /** Start the loop if it was stopped.
@@ -463,18 +470,17 @@ function toMap(arr, callback, copy = false) {
   }
   return mapNew;
 }
-var array_default = { chunk, unique, forceArray, betterMap, toMap };
 
 // src/file.ts
-var import_fs = __toESM(require("fs"));
+var import_node_fs = __toESM(require("fs"));
 function readDir(path, options) {
   const _options = { recursive: true, ...options };
-  if (!import_fs.default.existsSync(path)) return [];
-  if (!_options.recursive) return import_fs.default.readdirSync(path);
+  if (!import_node_fs.default.existsSync(path)) return [];
+  if (!_options.recursive) return import_node_fs.default.readdirSync(path);
   const walk = (_dir, _dn) => {
     let results = [];
-    let directory = import_fs.default.readdirSync(_dir);
-    let file_stats = directory.map((fn) => import_fs.default.statSync(`${_dir}/${fn}`));
+    let directory = import_node_fs.default.readdirSync(_dir);
+    let file_stats = directory.map((fn) => import_node_fs.default.statSync(`${_dir}/${fn}`));
     let files = directory.filter((fn, idx) => file_stats[idx].isFile());
     let dirs = directory.filter((fn, idx) => file_stats[idx].isDirectory());
     for (let fn of files) results.push(`${_dn ? `${_dn}/` : ""}${fn}`);
@@ -547,8 +553,8 @@ function choiceIndex(arr) {
   return randomNumber(0, arr.length - 1);
 }
 function choiceWeighted(arr, path = "", copy = false) {
-  let weights = array_default.betterMap(arr, (item2, { lastElement }) => {
-    const prop = path ? object_default.getProp(item2, path) : item2;
+  let weights = betterMap(arr, (item2, { lastElement }) => {
+    const prop = path ? getProp(item2, path) : item2;
     if (typeof prop !== "number") throw new TypeError(`\`${path}\` must lead to a number property in the array`);
     return prop + (lastElement || 0);
   });
@@ -582,6 +588,7 @@ function toLeet(str) {
   etaYMDHMS,
   forceArray,
   formatLargeNumber,
+  formatMemory,
   formatThousands,
   getProp,
   msToSec,

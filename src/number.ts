@@ -1,4 +1,4 @@
-import __object from "./object";
+import { getProp } from "./object";
 
 /** Get the sum of an array of numbers. Any negative numbers will subtract from the total.
  * @param arr The array to sum.
@@ -8,7 +8,7 @@ export function sum(arr: number[], path: string = "", ignoreNaN: boolean = false
     const _path = path.trim();
 
     // Map the array if a path is provided
-    const _arr = _path ? arr.map(a => Number(__object.getProp(a, _path))) : arr;
+    const _arr = _path ? arr.map(a => Number(getProp(a, _path))) : arr;
 
     return _arr.reduce((a, b) => {
         const invalid = isNaN(b) && !ignoreNaN;
@@ -70,36 +70,60 @@ export function formatThousands(num: number, sep: string = ","): string {
 /** Format a number into a short, human-readable string.
  * @param num The number to format.
  * @param units Custom unit names to use.
- *
  * @example
  * formatNumber(1000) -> "1k"
  * formatNumber(1000000) -> "1mil"
  * formatNumber(1000000000) -> "1bil"
- * formatNumber(1000, [" thou", " mill", " bill"]) -> "1 thou" */
-export function formatLargeNumber(num: number, units: [string, string, string] = ["k", "mil", "bil"]): string {
-    const _units = ["", ...units];
-    let index = 0;
-    while (Math.abs(num) >= 1000 && index < _units.length - 1) {
-        num /= 1000;
-        index++;
-    }
-    let result = num.toFixed(1).replace(/\.0$/, "");
-    if (result.slice(-1) === "0") result = result.slice(0, -1);
-    return result + _units[index];
+ * formatNumber(1000, [" thou", " mill", " bill"]) -> "1 thou"
+ * @copyright *Utility modified by **@fujimori_***  */
+export function formatLargeNumber(num: number, units: [string, string, string] = ["k", "M", "B"]): string {
+    if (num < 1000) return num.toString();
+    const i = Math.floor(Math.log10(num) / 3);
+    const val = num / Math.pow(1000, i);
+    return (
+        val
+            .toFixed(val >= 10 ? 1 : 2)
+            .replace(/\.0+$/, "")
+            .replace(/\.$/, "") + units[i - 1]
+    );
 }
 
-/** Add the ordinal place to the end of a given number.
- * @param num The number to add the ordinal to.
- *
+/** Format a number to an ordinal number (e.g. 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th").
+ * @param input The number to format.
+ * @param useLocale Whether to use the user's locale for formatting the number.
+ * @copyright *Utility modified by **@fujimori_*** */
+export function toOrdinal(input: number | string, useLocale = false): string {
+    const num = typeof input === "string" ? parseFloat(input) : Number(input);
+    if (isNaN(num)) throw TypeError("Invalid input");
+
+    const suffix = ["st", "nd", "rd"][(((num % 10) + 10) % 10) - 1] || "th";
+    return (useLocale ? num.toLocaleString() : num.toString()) + suffix;
+}
+
+/** Format a memory size in bytes into a human-readable string.
+ * @param bytes The number of bytes to format.
+ * @param decimals The number of decimal places to round the result to.
  * @example
- * ordinal(1) -> "1st"
- * ordinal(2) -> "2nd"
- * ordinal(3) -> "3rd"
- * ordinal(4) -> "4th" */
-export function toOrdinal(num: number): string {
-    const endings = ["th", "st", "nd", "rd"];
-    const mod = num % 100;
-    return `${num}${endings[(mod - 20) % 10] || endings[mod] || endings[0]}`;
+ * formatMemory(1024) --> "1.0 KB"
+ * formatMemory(1024000) --> "1.0 MB"
+ * @copyright *Utility created by **@fujimori_***
+ * @returns A human-readable representation of the memory size. */
+export function formatMemory(
+    bytes: number,
+    decimals: number = 1,
+    units: [string, string, string, string, string, string, string, string, string] = [
+        "B",
+        "KB",
+        "MB",
+        "GB",
+        "TB",
+        "PB",
+        "EB",
+        "ZB",
+        "YB"
+    ]
+): string {
+    return `${(bytes / Math.pow(1024, Math.floor(Math.log2(bytes / 1024)))).toFixed(decimals)} ${
+        units[Math.floor(Math.log2(bytes / 1024))]
+    }`;
 }
-
-export default { sum, clamp, percent, secToMs, msToSec, formatThousands, formatLargeNumber, toOrdinal };

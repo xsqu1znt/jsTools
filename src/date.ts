@@ -16,7 +16,7 @@ export interface ETAOptions {
     decimalLimit?: number;
 }
 
-import __number from "./number";
+import { msToSec } from "./number";
 
 /** Parse a string into either milliseconds or seconds.
  * @param str The string to parse.
@@ -68,7 +68,7 @@ export function parseTime(str: string | number, options?: ParseTimeOptions) {
 
     /* - - - - - { Return the Result } - - - - - */
     if (_options.fromNow) isNegative ? (sum = Date.now() - sum) : (sum = Date.now() + sum);
-    if (_options.type === "s") sum = __number.msToSec(sum);
+    if (_options.type === "s") sum = msToSec(sum);
     if (!_options.fromNow && isNegative) sum = -sum;
 
     return sum;
@@ -155,7 +155,7 @@ export function etaHMS(unix: number | string, options?: ETAOptions): string | nu
     if (!difference) return "now";
 
     /* - - - - - { Preform Calculations } - - - - - */
-    const seconds = __number.msToSec(difference);
+    const seconds = msToSec(difference);
 
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
@@ -181,7 +181,7 @@ export function etaHMS(unix: number | string, options?: ETAOptions): string | nu
  * @param unix The Unix timestamp in milliseconds for which the time difference is calculated.
  * @param options An optional object to configure the behavior of the function.
  *
- * @copyright *Code written by **@fujimori_*** */
+ * @copyright *Utility created by **@fujimori_*** */
 export function etaYMDHMS(unix: number | string, options?: ETAOptions): string | null {
     const _options = {
         ignorePast: false,
@@ -202,7 +202,7 @@ export function etaYMDHMS(unix: number | string, options?: ETAOptions): string |
     if (!difference) return "now";
 
     /* - - - - - { Preform Calculations } - - - - - */
-    const seconds = __number.msToSec(difference);
+    const seconds = msToSec(difference);
 
     /* Break down the counter math */
     const y = Math.floor(seconds / 31536000);
@@ -251,7 +251,7 @@ export function etaYMDHMS(unix: number | string, options?: ETAOptions): string |
 /**Format a Unix timestamp into a dynamic "DD:HH:MM:SS" time string format.
  * @param unix The Unix timestamp in milliseconds to convert.
  * @param options An optional object to configure the behavior of the function.
- * @copyright *Code written by **@fujimori_*** */
+ * @copyright *Utility created by **@fujimori_*** */
 export function etaDigital(unix: number | string, options?: ETAOptions): string | null {
     const _options = {
         ignorePast: false,
@@ -272,7 +272,7 @@ export function etaDigital(unix: number | string, options?: ETAOptions): string 
     if (!difference) return "now";
 
     /* - - - - - { Preform Calculations } - - - - - */
-    const seconds = __number.msToSec(difference);
+    const seconds = msToSec(difference);
 
     // Break down the counter math
     let d = Math.floor((seconds % 31536000) / 86400);
@@ -305,5 +305,3 @@ export function etaDigital(unix: number | string, options?: ETAOptions): string 
 
     return result.join(":");
 }
-
-export default { parseTime, eta, etaHMS, etaYMDHMS, etaDigital };

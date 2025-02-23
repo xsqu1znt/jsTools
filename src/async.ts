@@ -1,6 +1,6 @@
 import { setTimeout } from "node:timers/promises";
 import { EventEmitter } from "node:stream";
-import __date from "./date";
+import { parseTime } from "./date";
 
 export type AnyFunc = (...args: any) => any;
 export type LoopIntervalCallback = (loop: LoopInterval<AnyFunc>) => any;
@@ -21,7 +21,7 @@ interface __LoopIntervalEvents {
 
 /** A wrapper of {@link setTimeout}. */
 export async function sleep(ms: string | number): Promise<void> {
-    return await setTimeout(__date.parseTime(ms));
+    return await setTimeout(parseTime(ms));
 }
 
 export class LoopInterval<T extends LoopIntervalCallback> {
@@ -36,9 +36,9 @@ export class LoopInterval<T extends LoopIntervalCallback> {
      * @param delay The time to wait before running the function again.
      * @param immediate Whether to run the function immediately after initialization. Defaults to `true`.
      *
-     * This parameter utilizes {@link __date.parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
     constructor(fn: T, delay: string | number, immediate: boolean = true) {
-        this.delay = __date.parseTime(delay);
+        this.delay = parseTime(delay);
 
         const main = async () => {
             if (!this.running) return this.__eventEmitter.emit("stop");
@@ -83,9 +83,9 @@ export class LoopInterval<T extends LoopIntervalCallback> {
 
     /** Change the delay of the loop.
      * @param delay The delay.
-     * This parameter utilizes {@link __date.parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
     setDelay(delay: string | number): this {
-        this.delay = __date.parseTime(delay);
+        this.delay = parseTime(delay);
         return this;
     }
 
@@ -129,5 +129,3 @@ export class LoopInterval<T extends LoopIntervalCallback> {
         return this;
     }
 }
-
-export default { sleep, LoopInterval };
