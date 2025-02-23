@@ -100,7 +100,7 @@ declare function unique<T extends any[]>(arr: T, prop?: string, copy?: boolean):
 declare function forceArray<T>(item: T, options: ForceArrayOptions & {
     filter: true;
 }): NonNullableForcedArray<T>;
-declare function forceArray<T>(item: T, options: ForceArrayOptions & {
+declare function forceArray<T>(item: T, options?: ForceArrayOptions & {
     filter?: boolean;
 }): ForcedArray<T>;
 /** Similar to {@link Array.prototype.map}, but gives the callback access to the new array being constructed.
