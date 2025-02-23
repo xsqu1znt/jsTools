@@ -97,7 +97,7 @@ export function unique<T extends any[]>(arr: T, prop?: string, copy: boolean = f
  * @param item The item to be converted into an array.
  * @param options Optional settings for the conversion. */
 export function forceArray<T>(item: T, options: ForceArrayOptions & { filter: true }): NonNullableForcedArray<T>;
-export function forceArray<T>(item: T, options: ForceArrayOptions & { filter?: boolean }): ForcedArray<T>;
+export function forceArray<T>(item: T, options?: ForceArrayOptions & { filter?: boolean }): ForcedArray<T>;
 export function forceArray<T>(item: T, options?: ForceArrayOptions) {
     let itemArray = Array.isArray(item) ? item : [item];
     if (options?.filter) itemArray = itemArray.filter(i => i !== undefined && i !== null);
