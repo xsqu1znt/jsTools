@@ -302,4 +302,49 @@ type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type NonNullableForcedArray, type ParseTimeOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+declare const _default: {
+    toTitleCase(str: string): string;
+    toLeet(str: string): string;
+    randomNumber(min: number, max: number, round?: boolean): number;
+    numberString(len: number): string;
+    alphaString(len: number, includeUpper?: boolean): string;
+    alphaNumbericString(len: number, includeUpper?: boolean): string;
+    chance(percent?: number): boolean;
+    choice<T>(arr: T[], copy?: boolean): T;
+    choiceIndex(arr: any[]): number;
+    choiceWeighted<T extends any[]>(arr: T, path?: string, copy?: boolean): T[number];
+    getProp(obj: {}, path: string): any;
+    sum(arr: number[], path?: string, ignoreNaN?: boolean): number;
+    clamp(num: number, max: number): number;
+    clamp(num: number, range: {
+        min?: number;
+        max: number;
+    }): number;
+    percent(a: number, b: number, round?: boolean): number;
+    secToMs(sec: number, round?: boolean): number;
+    msToSec(ms: number, round?: boolean): number;
+    formatThousands(num: number, sep?: string): string;
+    formatLargeNumber(num: number, units?: [string, string, string]): string;
+    toOrdinal(input: number | string, useLocale?: boolean): string;
+    formatMemory(bytes: number, decimals?: number, units?: [string, string, string, string, string, string, string, string, string]): string;
+    readDir(path: string, options?: ReadDirOptions): string[];
+    parseTime(str: string | number, options?: ParseTimeOptions): number;
+    eta(unix: number | string, options?: ETAOptions): string | null;
+    etaHMS(unix: number | string, options?: ETAOptions): string | null;
+    etaYMDHMS(unix: number | string, options?: ETAOptions): string | null;
+    etaDigital(unix: number | string, options?: ETAOptions): string | null;
+    chunk<T extends any[]>(arr: T, size: number, copy?: boolean): T[];
+    unique<T extends any[]>(arr: T, prop?: string, copy?: boolean): T;
+    forceArray<T>(item: T, options: ForceArrayOptions & {
+        filter: true;
+    }): NonNullableForcedArray<T>;
+    forceArray<T>(item: T, options?: ForceArrayOptions & {
+        filter?: boolean;
+    }): ForcedArray<T>;
+    betterMap<T extends any[]>(arr: T, callback: BetterMapCallback<T>, copy?: boolean): T;
+    toMap<T extends any[]>(arr: T, callback: ToMapCallback<T>, copy?: boolean): Map<any, any>;
+    sleep(ms: string | number): Promise<void>;
+    LoopInterval: typeof LoopInterval;
+};
+
+export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type NonNullableForcedArray, type ParseTimeOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
