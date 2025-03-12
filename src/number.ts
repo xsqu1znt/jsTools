@@ -30,6 +30,18 @@ export function clamp(num: number, range: { min?: number; max: number } | number
     return num < _range.min ? _range.min : num > _range.max ? _range.max : num;
 }
 
+/** Check if a number is within a specified range.
+ * @param num The number to check.
+ * @param range The range to check. `min` defaults to 0. */
+export function inRange(num: number, max: number): boolean;
+export function inRange(num: number, range: { min?: number; max: number }): boolean;
+export function inRange(num: number, range: { min?: number; max: number } | number): boolean {
+    let _range = { min: 0, max: 0 };
+    if (typeof range === "number") _range.max = range;
+    else _range = { min: range.min || 0, max: range.max };
+    return num >= _range.min && num <= _range.max;
+}
+
 /** Get the percentage value between two numbers.
  * @param a The numerator.
  * @param b The denominator.

@@ -50,6 +50,7 @@ __export(index_exports, {
   formatMemory: () => formatMemory,
   formatThousands: () => formatThousands,
   getProp: () => getProp,
+  inRange: () => inRange,
   msToSec: () => msToSec,
   numberString: () => numberString,
   parseTime: () => parseTime,
@@ -93,6 +94,7 @@ __export(number_exports, {
   formatLargeNumber: () => formatLargeNumber,
   formatMemory: () => formatMemory,
   formatThousands: () => formatThousands,
+  inRange: () => inRange,
   msToSec: () => msToSec,
   percent: () => percent,
   secToMs: () => secToMs,
@@ -139,6 +141,12 @@ function clamp(num, range) {
   if (typeof range === "number") _range.max = range;
   else _range = { min: range.min || 0, max: range.max };
   return num < _range.min ? _range.min : num > _range.max ? _range.max : num;
+}
+function inRange(num, range) {
+  let _range = { min: 0, max: 0 };
+  if (typeof range === "number") _range.max = range;
+  else _range = { min: range.min || 0, max: range.max };
+  return num >= _range.min && num <= _range.max;
 }
 function percent(a, b, round = true) {
   return round ? Math.floor(a / b * 100) : a / b * 100;
@@ -659,6 +667,7 @@ var index_default = { ...async_exports, ...array_exports, ...date_exports, ...fi
   formatMemory,
   formatThousands,
   getProp,
+  inRange,
   msToSec,
   numberString,
   parseTime,

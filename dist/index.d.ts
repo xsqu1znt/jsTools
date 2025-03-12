@@ -193,6 +193,14 @@ declare function clamp(num: number, range: {
     min?: number;
     max: number;
 }): number;
+/** Check if a number is within a specified range.
+ * @param num The number to check.
+ * @param range The range to check. `min` defaults to 0. */
+declare function inRange(num: number, max: number): boolean;
+declare function inRange(num: number, range: {
+    min?: number;
+    max: number;
+}): boolean;
 /** Get the percentage value between two numbers.
  * @param a The numerator.
  * @param b The denominator.
@@ -320,6 +328,11 @@ declare const _default: {
         min?: number;
         max: number;
     }): number;
+    inRange(num: number, max: number): boolean;
+    inRange(num: number, range: {
+        min?: number;
+        max: number;
+    }): boolean;
     percent(a: number, b: number, round?: boolean): number;
     secToMs(sec: number, round?: boolean): number;
     msToSec(ms: number, round?: boolean): number;
@@ -347,4 +360,4 @@ declare const _default: {
     LoopInterval: typeof LoopInterval;
 };
 
-export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type NonNullableForcedArray, type ParseTimeOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type NonNullableForcedArray, type ParseTimeOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
