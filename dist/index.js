@@ -757,14 +757,13 @@ var ItemCache = class {
    * @param expiresIn The lifetime of the item. (milliseconds). */
   push(key, item, expiresIn) {
     const cache = this.cache.find((c) => c.key === key);
+    const newItem = { item, expiresAt: expiresIn ? Date.now() + expiresIn : void 0 };
     if (cache) {
-      cache.value.push({ item, expiresAt: expiresIn ? Date.now() + expiresIn : void 0 });
+      cache.value.push(newItem);
+      return cache.value.map((c) => c.item);
     } else {
-      this.cache.push({
-        key,
-        value: [{ item, expiresAt: expiresIn ? Date.now() + expiresIn : void 0 }],
-        createdAt: Date.now()
-      });
+      this.cache.push({ key, value: [newItem], createdAt: Date.now() });
+      return [newItem.item];
     }
   }
   /** Delete items from a key in a way similar to {@link Array.prototype.filter}.

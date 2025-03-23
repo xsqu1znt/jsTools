@@ -309,15 +309,14 @@ export class ItemCache<T extends any[]> {
      * @param expiresIn The lifetime of the item. (milliseconds). */
     push(key: string | number, item: T[number], expiresIn?: number) {
         const cache = this.cache.find(c => c.key === key);
+        const newItem = { item, expiresAt: expiresIn ? Date.now() + expiresIn : undefined };
 
         if (cache) {
-            cache.value.push({ item, expiresAt: expiresIn ? Date.now() + expiresIn : undefined });
+            cache.value.push(newItem);
+            return cache.value.map(c => c.item);
         } else {
-            this.cache.push({
-                key,
-                value: [{ item, expiresAt: expiresIn ? Date.now() + expiresIn : undefined }],
-                createdAt: Date.now()
-            });
+            this.cache.push({ key, value: [newItem], createdAt: Date.now() });
+            return [newItem.item];
         }
     }
 

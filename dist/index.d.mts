@@ -391,7 +391,7 @@ declare class ItemCache<T extends any[]> {
      * @param key The key to push to.
      * @param item The item to push.
      * @param expiresIn The lifetime of the item. (milliseconds). */
-    push(key: string | number, item: T[number], expiresIn?: number): void;
+    push(key: string | number, item: T[number], expiresIn?: number): T[number][];
     /** Delete items from a key in a way similar to {@link Array.prototype.filter}.
      * @param key The key to delete items from.
      * @param fn The function to filter with. */
