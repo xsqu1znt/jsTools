@@ -7,11 +7,9 @@ var __export = (target, all) => {
 // src/async.ts
 var async_exports = {};
 __export(async_exports, {
-  LoopInterval: () => LoopInterval,
   sleep: () => sleep
 });
 import { setTimeout } from "node:timers/promises";
-import { EventEmitter } from "node:stream";
 
 // src/date.ts
 var date_exports = {};
@@ -315,91 +313,6 @@ function etaDigital(unix, options) {
 async function sleep(ms) {
   return await setTimeout(parseTime(ms));
 }
-var LoopInterval = class {
-  running = false;
-  delay;
-  EventEmitter = new EventEmitter();
-  __eventEmitter = new EventEmitter();
-  /** Run a function every interval. If the function is asyncronous, it will wait for completion.
-   * @param fn The function that will be run.
-   * @param delay The time to wait before running the function again.
-   * @param immediate Whether to run the function immediately after initialization. Defaults to `true`.
-   *
-   * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
-  constructor(fn, delay, immediate = true) {
-    this.delay = parseTime(delay);
-    const main = async () => {
-      if (!this.running) return this.__eventEmitter.emit("stop");
-      this.EventEmitter.emit("executed", await fn(this));
-    };
-    this.__eventEmitter.on("execute", async () => main);
-    this.EventEmitter.on("executed", () => {
-      if (this.running) {
-        sleep(this.delay).then(() => this.__eventEmitter.emit("execute"));
-      }
-    });
-    this.__eventEmitter.on("bump", async () => this.EventEmitter.emit("bumped", await fn(this)));
-    this.__eventEmitter.on("start", (_immediate) => {
-      if (this.running) return;
-      this.running = true;
-      this.__eventEmitter.removeAllListeners("execute");
-      this.__eventEmitter.on("execute", main);
-      this.EventEmitter.emit("started");
-      if (_immediate) {
-        this.__eventEmitter.emit("execute");
-      } else {
-        sleep(this.delay).then(() => this.__eventEmitter.emit("execute"));
-      }
-    });
-    this.__eventEmitter.on("stop", () => {
-      this.running = false;
-      this.__eventEmitter.removeAllListeners("execute");
-      this.EventEmitter.emit("stopped");
-    });
-    this.__eventEmitter.emit("start", immediate);
-  }
-  /** Change the delay of the loop.
-   * @param delay The delay.
-   * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
-  setDelay(delay) {
-    this.delay = parseTime(delay);
-    return this;
-  }
-  /** Start the loop if it was stopped.
-   * @param immediate Whether to start immediately. */
-  start(immediate = false) {
-    this.__eventEmitter.emit("start", immediate);
-    return this;
-  }
-  /** Stop the loop. */
-  stop() {
-    this.__eventEmitter.emit("stop");
-    return this;
-  }
-  /** Manually trigger the callback. */
-  execute() {
-    this.__eventEmitter.emit("bump");
-    return this;
-  }
-  /** Add a listener to call each time a cycle completes.
-   * @param fn The function to call. */
-  on(fn) {
-    this.EventEmitter.on("executed", (...args) => fn(this, args));
-    return this;
-  }
-  /** Add a listener to call once a cycle completes.
-   * @param fn The function to call. */
-  once(fn) {
-    this.EventEmitter.once("executed", (...args) => fn(this, args));
-    return this;
-  }
-  /** Remove a listener from the cycle.
-   * @param fn The function to remove. */
-  off(fn) {
-    this.EventEmitter.off("executed", (...args) => fn(this, args));
-    return this;
-  }
-};
 
 // src/array.ts
 var array_exports = {};
@@ -577,12 +490,226 @@ function toLeet(str) {
   return str.replace(/a|A/g, "4").replace(/e|E/g, "3").replace(/i|I/g, "1").replace(/o|O/g, "0").replace(/t|T/g, "7");
 }
 
+// src/utils.ts
+var utils_exports = {};
+__export(utils_exports, {
+  BetterCache: () => BetterCache,
+  LoopInterval: () => LoopInterval
+});
+import { EventEmitter } from "node:stream";
+var LoopInterval = class {
+  running = false;
+  delay;
+  EventEmitter = new EventEmitter();
+  __eventEmitter = new EventEmitter();
+  /** Run a function every interval. If the function is asyncronous, it will wait for completion.
+   * @param fn The function that will be run.
+   * @param delay The time to wait before running the function again.
+   * @param immediate Whether to run the function immediately after initialization. Defaults to `true`.
+   *
+   * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+  constructor(fn, delay, immediate = true) {
+    this.delay = parseTime(delay);
+    const main = async () => {
+      if (!this.running) return this.__eventEmitter.emit("stop");
+      this.EventEmitter.emit("executed", await fn(this));
+    };
+    this.__eventEmitter.on("execute", async () => main);
+    this.EventEmitter.on("executed", () => {
+      if (this.running) {
+        sleep(this.delay).then(() => this.__eventEmitter.emit("execute"));
+      }
+    });
+    this.__eventEmitter.on("bump", async () => this.EventEmitter.emit("bumped", await fn(this)));
+    this.__eventEmitter.on("start", (_immediate) => {
+      if (this.running) return;
+      this.running = true;
+      this.__eventEmitter.removeAllListeners("execute");
+      this.__eventEmitter.on("execute", main);
+      this.EventEmitter.emit("started");
+      if (_immediate) {
+        this.__eventEmitter.emit("execute");
+      } else {
+        sleep(this.delay).then(() => this.__eventEmitter.emit("execute"));
+      }
+    });
+    this.__eventEmitter.on("stop", () => {
+      this.running = false;
+      this.__eventEmitter.removeAllListeners("execute");
+      this.EventEmitter.emit("stopped");
+    });
+    this.__eventEmitter.emit("start", immediate);
+  }
+  /** Change the delay of the loop.
+   * @param delay The delay.
+   * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+  setDelay(delay) {
+    this.delay = parseTime(delay);
+    return this;
+  }
+  /** Start the loop if it was stopped.
+   * @param immediate Whether to start immediately. */
+  start(immediate = false) {
+    this.__eventEmitter.emit("start", immediate);
+    return this;
+  }
+  /** Stop the loop. */
+  stop() {
+    this.__eventEmitter.emit("stop");
+    return this;
+  }
+  /** Manually trigger the callback. */
+  execute() {
+    this.__eventEmitter.emit("bump");
+    return this;
+  }
+  /** Add a listener to call each time a cycle completes.
+   * @param fn The function to call. */
+  on(fn) {
+    this.EventEmitter.on("executed", (...args) => fn(this, args));
+    return this;
+  }
+  /** Add a listener to call once a cycle completes.
+   * @param fn The function to call. */
+  once(fn) {
+    this.EventEmitter.once("executed", (...args) => fn(this, args));
+    return this;
+  }
+  /** Remove a listener from the cycle.
+   * @param fn The function to remove. */
+  off(fn) {
+    this.EventEmitter.off("executed", (...args) => fn(this, args));
+    return this;
+  }
+};
+var BetterCache = class {
+  loop;
+  lifetime;
+  checkInterval;
+  cache = [];
+  constructor(options) {
+    this.lifetime = options?.lifetime ? parseTime(options.lifetime) : null;
+    this.checkInterval = options?.checkInterval ? parseTime(options?.checkInterval) || 3e4 : 3e4;
+    this.loop = new LoopInterval(
+      () => {
+        if (this.lifetime) {
+          for (const cache of this.cache) {
+            if (Date.now() - cache.createdAt > this.lifetime) {
+              this.delete(cache.key);
+            }
+          }
+        }
+        const expiredItems = this.perishable({ expired: true, flat: true });
+        const previouslyUsedIndexes = /* @__PURE__ */ new Map();
+        if (expiredItems.length) {
+          for (const item of expiredItems) {
+            const index = previouslyUsedIndexes.get(item.key) ?? this.cache.findIndex((c) => c.key === item.key);
+            if (index === -1) continue;
+            if (!previouslyUsedIndexes.has(item.key)) {
+              previouslyUsedIndexes.set(item.key, index);
+            }
+            this.cache[index].value = this.cache[index].value.filter((i) => i.item !== item.item);
+            if (!this.cache[index].value.length) {
+              this.delete(item.key);
+            }
+          }
+        }
+      },
+      this.checkInterval,
+      false
+    );
+  }
+  /** The number of keys in the cache. */
+  get size() {
+    return this.cache.length;
+  }
+  /** Get an array of keys in the cache. */
+  keys() {
+    return this.cache.map((c) => c.key);
+  }
+  values(flat) {
+    return flat ? this.cache.flatMap((c) => c.value.map((_c) => _c.item)) : this.cache.map((c) => c.value.map((_c) => _c.item));
+  }
+  /** Check if a key is in the cache.
+   * @param key The key to look for. */
+  has(key) {
+    return this.cache.some((c) => c.key === key);
+  }
+  /** Clear everything in the cache. */
+  clear() {
+    this.cache = [];
+  }
+  perishable(options) {
+    const perishable = this.cache.filter((c) => c.value.some((v) => v.expiresAt)).map(
+      (c) => c.value.filter((_c) => !options?.expired || Date.now() > _c.expiresAt).map((_c) => ({ key: c.key, ..._c }))
+    );
+    return options?.flat ? perishable.flat() : perishable;
+  }
+  /** Get the number of items in a key. */
+  count(key) {
+    return this.cache.find((c) => c.key === key)?.value.length;
+  }
+  /** Get the items in a key. */
+  get(key) {
+    return this.cache.find((c) => c.key === key)?.value.map((c) => c.item);
+  }
+  /** Add a key or overwrite an existing key in the cache.
+   * @param key The key to set.
+   * @param value The value to set.
+   * @param overwrite Overwrite the key if it already exists. */
+  set(key, value, overwrite) {
+    const cache = this.cache.find((c) => c.key === key);
+    if (cache) {
+      if (overwrite) {
+        cache.value = value.map((v) => ({ item: v, expiresAt: void 0 }));
+        return true;
+      }
+    } else {
+      this.cache.push({ key, value: value.map((v) => ({ item: v, expiresAt: void 0 })), createdAt: Date.now() });
+      return true;
+    }
+    return false;
+  }
+  /** Delete a key from the cache. Returns the items of the deleted key.
+   * @param key The key to delete. */
+  delete(key) {
+    const index = this.cache.findIndex((c) => c.key === key);
+    if (index === -1) return void 0;
+    return this.cache.splice(index, 1).map((c) => c.value.map((_c) => _c.item))[0];
+  }
+  /** Push an item to a key. If the key does not exist, it will be created.
+   * @param key The key to push to.
+   * @param item The item to push.
+   * @param expiresIn The lifetime of the item. (milliseconds). */
+  push(key, item, expiresIn) {
+    const cache = this.cache.find((c) => c.key === key);
+    if (cache) {
+      cache.value.push({ item, expiresAt: expiresIn ? Date.now() + expiresIn : void 0 });
+    } else {
+      this.cache.push({
+        key,
+        value: [{ item, expiresAt: expiresIn ? Date.now() + expiresIn : void 0 }],
+        createdAt: Date.now()
+      });
+    }
+  }
+  /** Delete items from a key in a way similar to {@link Array.prototype.filter}.
+   * @param key The key to delete items from.
+   * @param fn The function to filter with. */
+  pull(key, fn) {
+    const index = this.cache.findIndex((c) => c.key === key);
+    if (index === -1) return;
+    this.cache[index].value = this.cache[index].value.filter((i) => fn(i.item));
+  }
+};
+
 // src/types.ts
 var types_exports = {};
 
 // src/index.ts
-var index_default = { ...async_exports, ...array_exports, ...date_exports, ...file_exports, ...number_exports, ...object_exports, ...random_exports, ...string_exports, ...types_exports };
+var index_default = { ...async_exports, ...array_exports, ...date_exports, ...file_exports, ...number_exports, ...object_exports, ...random_exports, ...string_exports, ...utils_exports, ...types_exports };
 export {
+  BetterCache,
   LoopInterval,
   alphaNumbericString,
   alphaString,

@@ -6,6 +6,7 @@ export * from "./number";
 export * from "./object";
 export * from "./random";
 export * from "./string";
+export * from "./utils";
 export * from "./types";
 
 import * as async from "./async";
@@ -16,6 +17,7 @@ import * as number from "./number";
 import * as object from "./object";
 import * as random from "./random";
 import * as string from "./string";
+import * as utils from "./utils";
 import * as types from "./types";
 
-export default { ...async, ...array, ...date, ...file, ...number, ...object, ...random, ...string, ...types };
+export default { ...async, ...array, ...date, ...file, ...number, ...object, ...random, ...string, ...utils, ...types };

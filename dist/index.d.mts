@@ -1,48 +1,7 @@
 import { EventEmitter } from 'node:stream';
 
-type AnyFunc = (...args: any) => any;
-type LoopIntervalCallback = (loop: LoopInterval<AnyFunc>) => any;
-interface LoopIntervalEvents {
-    executed: [any];
-    bumped: [any];
-    started: [];
-    stopped: [];
-}
 /** A wrapper of {@link setTimeout}. */
 declare function sleep(ms: string | number): Promise<void>;
-declare class LoopInterval<T extends LoopIntervalCallback> {
-    private running;
-    private delay;
-    EventEmitter: EventEmitter<LoopIntervalEvents>;
-    private __eventEmitter;
-    /** Run a function every interval. If the function is asyncronous, it will wait for completion.
-     * @param fn The function that will be run.
-     * @param delay The time to wait before running the function again.
-     * @param immediate Whether to run the function immediately after initialization. Defaults to `true`.
-     *
-     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
-    constructor(fn: T, delay: string | number, immediate?: boolean);
-    /** Change the delay of the loop.
-     * @param delay The delay.
-     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
-    setDelay(delay: string | number): this;
-    /** Start the loop if it was stopped.
-     * @param immediate Whether to start immediately. */
-    start(immediate?: boolean): this;
-    /** Stop the loop. */
-    stop(): this;
-    /** Manually trigger the callback. */
-    execute(): this;
-    /** Add a listener to call each time a cycle completes.
-     * @param fn The function to call. */
-    on(fn: (loop: LoopInterval<T>, ...args: any) => any): this;
-    /** Add a listener to call once a cycle completes.
-     * @param fn The function to call. */
-    once(fn: (loop: LoopInterval<T>, ...args: any) => any): this;
-    /** Remove a listener from the cycle.
-     * @param fn The function to remove. */
-    off(fn: (loop: LoopInterval<T>, ...args: any) => any): this;
-}
 
 type ForcedArray<T> = T extends any[] ? T : T[];
 type NonNullableForcedArray<T> = T extends any[] ? T[number] extends infer U ? U extends null | undefined ? never : U : never : NonNullable<T>[];
@@ -306,11 +265,133 @@ declare function toTitleCase(str: string): string;
  * @param str The string to format. */
 declare function toLeet(str: string): string;
 
+type AnyFunc = (...args: any) => any;
 type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
+type LoopIntervalCallback = (loop: LoopInterval<AnyFunc>) => any;
+interface LoopIntervalEvents {
+    executed: [any];
+    bumped: [any];
+    started: [];
+    stopped: [];
+}
+interface BetterCacheOptions {
+    /** How long a key should last until its cache is deleted. (milliseconds)
+     *
+     * Set to `0` or `null` to disable.
+     *
+     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+    lifetime?: string | number;
+    /** The interval to check for expired keys and items. (milliseconds)
+     *
+     * Cannot be 0, will default to 30 seconds.
+     *
+     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+    checkInterval?: string | number;
+}
+interface PerishableOptions {
+    expired?: boolean;
+    flat?: boolean;
+}
+interface MasterCache<T extends any[]> {
+    key: string | number;
+    value: {
+        item: T[number];
+        expiresAt: number | undefined;
+    }[];
+    createdAt: number;
+}
+interface PerishableItem<T extends any[]> {
+    key: string | number;
+    item: T[number];
+    expiresAt: number;
+}
+declare class LoopInterval<T extends LoopIntervalCallback> {
+    private running;
+    private delay;
+    EventEmitter: EventEmitter<LoopIntervalEvents>;
+    private __eventEmitter;
+    /** Run a function every interval. If the function is asyncronous, it will wait for completion.
+     * @param fn The function that will be run.
+     * @param delay The time to wait before running the function again.
+     * @param immediate Whether to run the function immediately after initialization. Defaults to `true`.
+     *
+     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+    constructor(fn: T, delay: string | number, immediate?: boolean);
+    /** Change the delay of the loop.
+     * @param delay The delay.
+     * This parameter utilizes {@link parseTime jsTools.parseTime}, letting you use "10s" or "1m 30s" instead of a number. */
+    setDelay(delay: string | number): this;
+    /** Start the loop if it was stopped.
+     * @param immediate Whether to start immediately. */
+    start(immediate?: boolean): this;
+    /** Stop the loop. */
+    stop(): this;
+    /** Manually trigger the callback. */
+    execute(): this;
+    /** Add a listener to call each time a cycle completes.
+     * @param fn The function to call. */
+    on(fn: (loop: LoopInterval<T>, ...args: any) => any): this;
+    /** Add a listener to call once a cycle completes.
+     * @param fn The function to call. */
+    once(fn: (loop: LoopInterval<T>, ...args: any) => any): this;
+    /** Remove a listener from the cycle.
+     * @param fn The function to remove. */
+    off(fn: (loop: LoopInterval<T>, ...args: any) => any): this;
+}
+declare class BetterCache<T extends any[]> {
+    loop: LoopInterval<AnyFunc>;
+    private lifetime;
+    private checkInterval;
+    private cache;
+    constructor(options?: BetterCacheOptions);
+    /** The number of keys in the cache. */
+    get size(): number;
+    /** Get an array of keys in the cache. */
+    keys(): (string | number)[];
+    /** Get a flattened array of values in the cache. */
+    values(flat: true): T[number][];
+    /** Get an array of values in the cache. */
+    values(flat?: false): T[];
+    /** Check if a key is in the cache.
+     * @param key The key to look for. */
+    has(key: string | number): boolean;
+    /** Clear everything in the cache. */
+    clear(): void;
+    /** Get an array of items that have a set expiration. */
+    perishable(options: PerishableOptions & {
+        flat: true;
+    }): PerishableItem<T>[];
+    /** Get an array of items that have a set expiration. */
+    perishable(options?: PerishableOptions): PerishableItem<T>[][];
+    /** Get the number of items in a key. */
+    count(key: string | number): number | undefined;
+    /** Get the items in a key. */
+    get(key: string | number): T[number][] | undefined;
+    /** Add a key or overwrite an existing key in the cache.
+     * @param key The key to set.
+     * @param value The value to set.
+     * @param overwrite Overwrite the key if it already exists. */
+    set(key: string | number, value: T, overwrite?: boolean): boolean;
+    /** Delete a key from the cache. Returns the items of the deleted key.
+     * @param key The key to delete. */
+    delete(key: string | number): T[number][] | undefined;
+    /** Push an item to a key. If the key does not exist, it will be created.
+     * @param key The key to push to.
+     * @param item The item to push.
+     * @param expiresIn The lifetime of the item. (milliseconds). */
+    push(key: string | number, item: T[number], expiresIn?: number): void;
+    /** Delete items from a key in a way similar to {@link Array.prototype.filter}.
+     * @param key The key to delete items from.
+     * @param fn The function to filter with. */
+    pull(key: string | number, fn: (item: T[number]) => boolean): void;
+}
+
 declare const _default: {
+    LoopInterval: typeof LoopInterval;
+    BetterCache: typeof BetterCache;
     toTitleCase(str: string): string;
     toLeet(str: string): string;
     randomNumber(min: number, max: number, round?: boolean): number;
@@ -357,7 +438,6 @@ declare const _default: {
     betterMap<T extends any[]>(arr: T, callback: BetterMapCallback<T>, copy?: boolean): T;
     toMap<T extends any[]>(arr: T, callback: ToMapCallback<T>, copy?: boolean): Map<any, any>;
     sleep(ms: string | number): Promise<void>;
-    LoopInterval: typeof LoopInterval;
 };
 
-export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type NonNullableForcedArray, type ParseTimeOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+export { type AnyFunc, BetterCache, type BetterCacheOptions, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
