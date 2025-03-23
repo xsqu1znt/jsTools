@@ -277,7 +277,7 @@ interface LoopIntervalEvents {
     started: [];
     stopped: [];
 }
-interface BetterCacheOptions {
+interface ItemCacheOptions {
     /** How long a key should last until its cache is deleted. (milliseconds)
      *
      * Set to `0` or `null` to disable.
@@ -341,12 +341,21 @@ declare class LoopInterval<T extends LoopIntervalCallback> {
      * @param fn The function to remove. */
     off(fn: (loop: LoopInterval<T>, ...args: any) => any): this;
 }
-declare class BetterCache<T extends any[]> {
+declare class ItemCache<T extends any[]> {
     loop: LoopInterval<AnyFunc>;
     private lifetime;
     private checkInterval;
     private cache;
-    constructor(options?: BetterCacheOptions);
+    /** An in-memory cache system that uses arrays to store items, allowing for high I/O usage **not susceptible to race conditions**.
+     *
+     * This implementation keeps a **<key, value>** workflow that you'd expect using a {@link Map Map}.
+     *
+     * Every interval expired items/caches will be deleted or cleared.
+     * Caches will only be deleted if `lifetime` is set.
+     *
+     * @param options Options for the cache.
+     * @note Utilizes {@link LoopInterval jsTools.LoopInterval} for the check interval. */
+    constructor(options?: ItemCacheOptions);
     /** The number of keys in the cache. */
     get size(): number;
     /** Get an array of keys in the cache. */
@@ -391,7 +400,7 @@ declare class BetterCache<T extends any[]> {
 
 declare const _default: {
     LoopInterval: typeof LoopInterval;
-    BetterCache: typeof BetterCache;
+    ItemCache: typeof ItemCache;
     toTitleCase(str: string): string;
     toLeet(str: string): string;
     randomNumber(min: number, max: number, round?: boolean): number;
@@ -440,4 +449,4 @@ declare const _default: {
     sleep(ms: string | number): Promise<void>;
 };
 
-export { type AnyFunc, BetterCache, type BetterCacheOptions, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, ItemCache, type ItemCacheOptions, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };

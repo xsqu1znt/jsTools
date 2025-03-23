@@ -493,7 +493,7 @@ function toLeet(str) {
 // src/utils.ts
 var utils_exports = {};
 __export(utils_exports, {
-  BetterCache: () => BetterCache,
+  ItemCache: () => ItemCache,
   LoopInterval: () => LoopInterval
 });
 import { EventEmitter } from "node:stream";
@@ -582,11 +582,20 @@ var LoopInterval = class {
     return this;
   }
 };
-var BetterCache = class {
+var ItemCache = class {
   loop;
   lifetime;
   checkInterval;
   cache = [];
+  /** An in-memory cache system that uses arrays to store items, allowing for high I/O usage **not susceptible to race conditions**.
+   *
+   * This implementation keeps a **<key, value>** workflow that you'd expect using a {@link Map Map}.
+   *
+   * Every interval expired items/caches will be deleted or cleared.
+   * Caches will only be deleted if `lifetime` is set.
+   *
+   * @param options Options for the cache.
+   * @note Utilizes {@link LoopInterval jsTools.LoopInterval} for the check interval. */
   constructor(options) {
     this.lifetime = options?.lifetime ? parseTime(options.lifetime) : null;
     this.checkInterval = options?.checkInterval ? parseTime(options?.checkInterval) || 3e4 : 3e4;
@@ -709,7 +718,7 @@ var types_exports = {};
 // src/index.ts
 var index_default = { ...async_exports, ...array_exports, ...date_exports, ...file_exports, ...number_exports, ...object_exports, ...random_exports, ...string_exports, ...utils_exports, ...types_exports };
 export {
-  BetterCache,
+  ItemCache,
   LoopInterval,
   alphaNumbericString,
   alphaString,

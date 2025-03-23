@@ -20,7 +20,7 @@ interface __LoopIntervalEvents {
     stop: [];
 }
 
-export interface BetterCacheOptions {
+export interface ItemCacheOptions {
     /** How long a key should last until its cache is deleted. (milliseconds)
      *
      * Set to `0` or `null` to disable.
@@ -158,7 +158,7 @@ export class LoopInterval<T extends LoopIntervalCallback> {
     }
 }
 
-export class BetterCache<T extends any[]> {
+export class ItemCache<T extends any[]> {
     loop: LoopInterval<AnyFunc>;
 
     private lifetime: number | null;
@@ -166,7 +166,16 @@ export class BetterCache<T extends any[]> {
 
     private cache: MasterCache<T>[] = [];
 
-    constructor(options?: BetterCacheOptions) {
+    /** An in-memory cache system that uses arrays to store items, allowing for high I/O usage **not susceptible to race conditions**.
+     *
+     * This implementation keeps a **<key, value>** workflow that you'd expect using a {@link Map Map}.
+     *
+     * Every interval expired items/caches will be deleted or cleared.
+     * Caches will only be deleted if `lifetime` is set.
+     *
+     * @param options Options for the cache.
+     * @note Utilizes {@link LoopInterval jsTools.LoopInterval} for the check interval. */
+    constructor(options?: ItemCacheOptions) {
         this.lifetime = options?.lifetime ? parseTime(options.lifetime) : null;
         this.checkInterval = options?.checkInterval ? parseTime(options?.checkInterval) || 30_000 : 30_000;
 
