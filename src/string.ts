@@ -10,12 +10,14 @@ export function escapeRegex(str: string): string {
  * @param length - Max length of the substring. If omitted, will return everything after the flag. */
 export function getFlagSubstring(str: string, flag: string | RegExp, length?: number): string | null {
     const split = str.split(" ");
-    const findIndex = split.findIndex(s =>
+    let findIndex = split.findIndex(s =>
         flag instanceof RegExp ? !!s.match(flag) : !!s.match(new RegExp(`${escapeRegex(flag)}\\b`))
     );
     if (findIndex === -1) return null;
 
-    return split.slice(findIndex, length ? findIndex + length : undefined).join(" ");
+    // Skip the flag itself in the substring
+    findIndex++;
+    return split.slice(findIndex, length ? findIndex + length : undefined).join(" ") ?? null;
 }
 
 /** Check if a string contains the specified flag.

@@ -559,11 +559,12 @@ function escapeRegex(str) {
 }
 function getFlagSubstring(str, flag, length) {
   const split = str.split(" ");
-  const findIndex = split.findIndex(
+  let findIndex = split.findIndex(
     (s) => flag instanceof RegExp ? !!s.match(flag) : !!s.match(new RegExp(`${escapeRegex(flag)}\\b`))
   );
   if (findIndex === -1) return null;
-  return split.slice(findIndex, length ? findIndex + length : void 0).join(" ");
+  findIndex++;
+  return split.slice(findIndex, length ? findIndex + length : void 0).join(" ") ?? null;
 }
 function hasFlag(str, flag) {
   if (flag instanceof RegExp) {
