@@ -480,9 +480,29 @@ function choiceWeighted(arr, path = "", copy = false) {
 // src/string.ts
 var string_exports = {};
 __export(string_exports, {
+  escapeRegex: () => escapeRegex,
+  getFlagSubstring: () => getFlagSubstring,
+  hasFlag: () => hasFlag,
   toLeet: () => toLeet,
   toTitleCase: () => toTitleCase
 });
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+function getFlagSubstring(str, flag, length) {
+  const split = str.split(" ");
+  const findIndex = split.findIndex(
+    (s) => flag instanceof RegExp ? !!s.match(flag) : !!s.match(new RegExp(`${escapeRegex(flag)}\\b`))
+  );
+  if (findIndex === -1) return null;
+  return split.slice(findIndex, length ? findIndex + length : void 0).join(" ");
+}
+function hasFlag(str, flag) {
+  if (flag instanceof RegExp) {
+    return !!str.match(flag);
+  }
+  return !!str.match(new RegExp(`${escapeRegex(flag)}\\b`));
+}
 function toTitleCase(str) {
   return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase());
 }
@@ -729,6 +749,7 @@ export {
   chunk,
   clamp,
   index_default as default,
+  escapeRegex,
   eta,
   etaDigital,
   etaHMS,
@@ -737,7 +758,9 @@ export {
   formatLargeNumber,
   formatMemory,
   formatThousands,
+  getFlagSubstring,
   getProp,
+  hasFlag,
   inRange,
   msToSec,
   numberString,

@@ -258,6 +258,18 @@ declare function choiceIndex(arr: any[]): number;
  * @param copy Whether to return a copy of the chosen item. Default is `false`. */
 declare function choiceWeighted<T extends any[]>(arr: T, path?: string, copy?: boolean): T[number];
 
+/** Escape all special regex characters in the given string.
+ * @param str - The string to escape. */
+declare function escapeRegex(str: string): string;
+/** Split a string by whitespace and return the substring after the specified flag.
+ * @param str - The string to parse.
+ * @param flag - A string or expression to look for.
+ * @param length - Max length of the substring. If omitted, will return everything after the flag. */
+declare function getFlagSubstring(str: string, flag: string | RegExp, length?: number): string | null;
+/** Check if a string contains the specified flag.
+ * @param str - The string to parse.
+ * @param flag - A string or expression to look for. */
+declare function hasFlag(str: string, flag: string | RegExp): boolean;
 /** Make the first letter of every alphanumeric word uppercase.
  * @param str The string to format. */
 declare function toTitleCase(str: string): string;
@@ -401,6 +413,9 @@ declare class ItemCache<T extends any[]> {
 declare const _default: {
     LoopInterval: typeof LoopInterval;
     ItemCache: typeof ItemCache;
+    escapeRegex(str: string): string;
+    getFlagSubstring(str: string, flag: string | RegExp, length?: number): string | null;
+    hasFlag(str: string, flag: string | RegExp): boolean;
     toTitleCase(str: string): string;
     toLeet(str: string): string;
     randomNumber(min: number, max: number, round?: boolean): number;
@@ -449,4 +464,4 @@ declare const _default: {
     sleep(ms: string | number): Promise<void>;
 };
 
-export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, ItemCache, type ItemCacheOptions, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getProp, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, ItemCache, type ItemCacheOptions, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, escapeRegex, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getFlagSubstring, getProp, hasFlag, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
