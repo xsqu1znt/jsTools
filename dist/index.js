@@ -128,14 +128,13 @@ function getProp(obj, path) {
 }
 
 // src/number.ts
-function sum(arr, path = "", ignoreNaN = false) {
-  const _path = path.trim();
+function sum(arr, options) {
+  const _path = options?.path?.trim();
   const _arr = _path ? arr.map((a) => Number(getProp(a, _path))) : arr;
   return _arr.reduce((a, b) => {
-    const invalid = isNaN(b) && !ignoreNaN;
+    const invalid = isNaN(b) && !options?.ignoreNaN;
     if (invalid) throw new TypeError(`'${b}' is not a valid number`);
-    if (invalid && ignoreNaN) b = 0;
-    return b < 0 ? a - -b : a + (b || 0);
+    return (isNaN(b) ? 0 : b) < 0 ? a - -b : a + (b || 0);
   }, 0);
 }
 function clamp(num, range) {
@@ -518,7 +517,7 @@ function alphaString(len, includeUpper = false) {
 function alphaNumbericString(len, includeUpper = false) {
   let str = "";
   for (let i = 0; i < len; i++) {
-    const char = str += chance() ? choice(alphabet) : randomNumber(0, 9);
+    const char = chance() ? choice(alphabet) : randomNumber(0, 9).toString();
     str += includeUpper && chance() ? char.toUpperCase() : char;
   }
   return str;

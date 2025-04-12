@@ -1,20 +1,25 @@
+export interface SumOptions {
+    /** An optional path to a nested array property. */
+    path?: string;
+    /** Whether to convert non-numerical values to 0. Default is `false`. */
+    ignoreNaN?: boolean;
+}
+
 import { getProp } from "./object";
 
-/** Get the sum of an array of numbers. Any negative numbers will subtract from the total.
+/** Get the sum of an array of numbers. Negative values subtract from the total.
  * @param arr The array to sum.
- * @param path The path to a nested array property.
- * @param ignoreNaN Ignore non-numerical values and use 0 instead. */
-export function sum(arr: number[], path: string = "", ignoreNaN: boolean = false): number {
-    const _path = path.trim();
+ * @param options Optional optioins. */
+export function sum(arr: number[], options?: SumOptions): number {
+    const _path = options?.path?.trim();
 
     // Map the array if a path is provided
     const _arr = _path ? arr.map(a => Number(getProp(a, _path))) : arr;
 
     return _arr.reduce((a, b) => {
-        const invalid = isNaN(b) && !ignoreNaN;
+        const invalid = isNaN(b) && !options?.ignoreNaN;
         if (invalid) throw new TypeError(`\'${b}\' is not a valid number`);
-        if (invalid && ignoreNaN) b = 0;
-        return b < 0 ? a - -b : a + (b || 0);
+        return (isNaN(b) ? 0 : b) < 0 ? a - -b : a + (b || 0);
     }, 0);
 }
 

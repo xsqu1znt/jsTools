@@ -44,14 +44,14 @@ export function alphaString(len: number, includeUpper: boolean = false): string 
 export function alphaNumbericString(len: number, includeUpper: boolean = false): string {
     let str = "";
     for (let i = 0; i < len; i++) {
-        const char = (str += chance() ? choice(alphabet) : randomNumber(0, 9));
+        const char = (chance() ? choice(alphabet) : randomNumber(0, 9).toString());
         str += includeUpper && chance() ? char.toUpperCase() : char;
     }
     return str;
 }
 
 /** Create a psuedo-random chance based on the given percentage.
- * @param percent The percentage chance of success. Must be between 1 and 100. Default is 50.*/
+ * @param percent The percentage chance of success. Must be between 1 and 100. Default is `50`.*/
 export function chance(percent: number = 50): boolean {
     if (percent < 1 || percent > 100) throw new Error(`\`${percent}\` must be within a range of 1 and 100`);
     return randomNumber(0, 100) < percent;

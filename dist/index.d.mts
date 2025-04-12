@@ -139,11 +139,16 @@ interface ReadDirOptions {
  * @param options An optional object to configure the behavior of the function. */
 declare function readDir(path: string, options?: ReadDirOptions): string[];
 
-/** Get the sum of an array of numbers. Any negative numbers will subtract from the total.
+interface SumOptions {
+    /** An optional path to a nested array property. */
+    path?: string;
+    /** Whether to convert non-numerical values to 0. Default is `false`. */
+    ignoreNaN?: boolean;
+}
+/** Get the sum of an array of numbers. Negative values subtract from the total.
  * @param arr The array to sum.
- * @param path The path to a nested array property.
- * @param ignoreNaN Ignore non-numerical values and use 0 instead. */
-declare function sum(arr: number[], path?: string, ignoreNaN?: boolean): number;
+ * @param options Optional optioins. */
+declare function sum(arr: number[], options?: SumOptions): number;
 /** Clamps a number within a specified range.
  * @param num Number to be clamped.
  * @param range The range to clamp. `min` defaults to 0. */
@@ -243,7 +248,7 @@ declare function alphaString(len: number, includeUpper?: boolean): string;
  * @param includeUpper Include uppercase letters in the string. Default is `false`. */
 declare function alphaNumbericString(len: number, includeUpper?: boolean): string;
 /** Create a psuedo-random chance based on the given percentage.
- * @param percent The percentage chance of success. Must be between 1 and 100. Default is 50.*/
+ * @param percent The percentage chance of success. Must be between 1 and 100. Default is `50`.*/
 declare function chance(percent?: number): boolean;
 /** Choose a psuedo-random item from an array.
  * @param arr Array of items to choose from.
@@ -427,7 +432,7 @@ declare const _default: {
     choiceIndex(arr: any[]): number;
     choiceWeighted<T extends any[]>(arr: T, path?: string, copy?: boolean): T[number];
     getProp(obj: {}, path: string): any;
-    sum(arr: number[], path?: string, ignoreNaN?: boolean): number;
+    sum(arr: number[], options?: SumOptions): number;
     clamp(num: number, max: number): number;
     clamp(num: number, range: {
         min?: number;
@@ -464,4 +469,4 @@ declare const _default: {
     sleep(ms: string | number): Promise<void>;
 };
 
-export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, ItemCache, type ItemCacheOptions, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, escapeRegex, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getFlagSubstring, getProp, hasFlag, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, ItemCache, type ItemCacheOptions, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type SumOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, escapeRegex, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getFlagSubstring, getProp, hasFlag, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
