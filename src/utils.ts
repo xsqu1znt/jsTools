@@ -158,7 +158,7 @@ export class LoopInterval<T extends LoopIntervalCallback> {
     }
 }
 
-export class ItemCache<T extends any[]> {
+export class ItemsCache<T extends any[]> {
     loop: LoopInterval<AnyFunc>;
 
     private lifetime: number | null;

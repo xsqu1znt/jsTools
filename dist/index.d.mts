@@ -358,7 +358,7 @@ declare class LoopInterval<T extends LoopIntervalCallback> {
      * @param fn The function to remove. */
     off(fn: (loop: LoopInterval<T>, ...args: any) => any): this;
 }
-declare class ItemCache<T extends any[]> {
+declare class ItemsCache<T extends any[]> {
     loop: LoopInterval<AnyFunc>;
     private lifetime;
     private checkInterval;
@@ -417,7 +417,7 @@ declare class ItemCache<T extends any[]> {
 
 declare const _default: {
     LoopInterval: typeof LoopInterval;
-    ItemCache: typeof ItemCache;
+    ItemsCache: typeof ItemsCache;
     escapeRegex(str: string): string;
     getFlagSubstring(str: string, flag: string | RegExp, length?: number): string | null;
     hasFlag(str: string, flag: string | RegExp): boolean;
@@ -469,4 +469,4 @@ declare const _default: {
     sleep(ms: string | number): Promise<void>;
 };
 
-export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, ItemCache, type ItemCacheOptions, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type SumOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, escapeRegex, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getFlagSubstring, getProp, hasFlag, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, type ItemCacheOptions, ItemsCache, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type SumOptions, type ToMapCallback, alphaNumbericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, escapeRegex, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getFlagSubstring, getProp, hasFlag, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };

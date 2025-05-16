@@ -30,7 +30,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
-  ItemCache: () => ItemCache,
+  ItemsCache: () => ItemsCache,
   LoopInterval: () => LoopInterval,
   alphaNumbericString: () => alphaNumbericString,
   alphaString: () => alphaString,
@@ -581,7 +581,7 @@ function toLeet(str) {
 // src/utils.ts
 var utils_exports = {};
 __export(utils_exports, {
-  ItemCache: () => ItemCache,
+  ItemsCache: () => ItemsCache,
   LoopInterval: () => LoopInterval
 });
 var import_node_stream = require("stream");
@@ -670,7 +670,7 @@ var LoopInterval = class {
     return this;
   }
 };
-var ItemCache = class {
+var ItemsCache = class {
   loop;
   lifetime;
   checkInterval;
@@ -806,7 +806,7 @@ var types_exports = {};
 var index_default = { ...async_exports, ...array_exports, ...date_exports, ...file_exports, ...number_exports, ...object_exports, ...random_exports, ...string_exports, ...utils_exports, ...types_exports };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  ItemCache,
+  ItemsCache,
   LoopInterval,
   alphaNumbericString,
   alphaString,

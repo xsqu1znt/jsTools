@@ -513,7 +513,7 @@ function toLeet(str) {
 // src/utils.ts
 var utils_exports = {};
 __export(utils_exports, {
-  ItemCache: () => ItemCache,
+  ItemsCache: () => ItemsCache,
   LoopInterval: () => LoopInterval
 });
 import { EventEmitter } from "node:stream";
@@ -602,7 +602,7 @@ var LoopInterval = class {
     return this;
   }
 };
-var ItemCache = class {
+var ItemsCache = class {
   loop;
   lifetime;
   checkInterval;
@@ -737,7 +737,7 @@ var types_exports = {};
 // src/index.ts
 var index_default = { ...async_exports, ...array_exports, ...date_exports, ...file_exports, ...number_exports, ...object_exports, ...random_exports, ...string_exports, ...utils_exports, ...types_exports };
 export {
-  ItemCache,
+  ItemsCache,
   LoopInterval,
   alphaNumbericString,
   alphaString,
