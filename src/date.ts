@@ -123,7 +123,7 @@ export function eta(unix: number | string, options?: ETAOptions): string | null 
     if (!result) return null;
 
     // Grammar adjustment
-    if (difference === 1) result.name = result.name.slice(0, -1);
+    if (Number(difference) === 1) result.name = result.name.slice(0, -1);
 
     return `${difference} ${result.name}${isPast && !_options.ignorePast ? " ago" : ""}`;
 }

@@ -264,7 +264,7 @@ function eta(unix, options) {
     );
   });
   if (!result) return null;
-  if (difference === 1) result.name = result.name.slice(0, -1);
+  if (Number(difference) === 1) result.name = result.name.slice(0, -1);
   return `${difference} ${result.name}${isPast && !_options.ignorePast ? " ago" : ""}`;
 }
 function etaHMS(unix, options) {
