@@ -443,6 +443,7 @@ __export(file_exports, {
   readDir: () => readDir
 });
 var import_node_fs = __toESM(require("fs"));
+var import_node_path = require("path");
 function readDir(path, options) {
   const _options = { recursive: true, ...options };
   if (!import_node_fs.default.existsSync(path)) return [];
@@ -450,11 +451,15 @@ function readDir(path, options) {
   const walk = (_dir, _dn) => {
     let results = [];
     let directory = import_node_fs.default.readdirSync(_dir);
-    let file_stats = directory.map((fn) => import_node_fs.default.statSync(`${_dir}/${fn}`));
+    let file_stats = directory.map((fn) => import_node_fs.default.statSync((0, import_node_path.join)(_dir, fn)));
     let files = directory.filter((fn, idx) => file_stats[idx].isFile());
     let dirs = directory.filter((fn, idx) => file_stats[idx].isDirectory());
-    for (let fn of files) results.push(`${_dn ? `${_dn}/` : ""}${fn}`);
-    for (let dn of dirs) results.push(...walk(`${_dir}/${dn}`, dn));
+    for (let fn of files) {
+      results.push(_dn ? (0, import_node_path.join)(_dn, fn) : fn);
+    }
+    for (let dn of dirs) {
+      results.push(...walk((0, import_node_path.join)(_dir, dn), _dn ? (0, import_node_path.join)(_dn, dn) : dn));
+    }
     return results;
   };
   return walk(path);

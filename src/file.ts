@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { join } from "node:path";
 
 export interface ReadDirOptions {
     /** Return nested files inside of the directory. */
@@ -21,12 +22,16 @@ export function readDir(path: string, options?: ReadDirOptions): string[] {
 
         let directory = fs.readdirSync(_dir);
 
-        let file_stats = directory.map(fn => fs.statSync(`${_dir}/${fn}`));
+        let file_stats = directory.map(fn => fs.statSync(join(_dir, fn)));
         let files = directory.filter((fn, idx) => file_stats[idx].isFile());
         let dirs = directory.filter((fn, idx) => file_stats[idx].isDirectory());
 
-        for (let fn of files) results.push(`${_dn ? `${_dn}/` : ""}${fn}`);
-        for (let dn of dirs) results.push(...walk(`${_dir}/${dn}`, dn));
+        for (let fn of files) {
+            results.push(_dn ? join(_dn, fn) : fn);
+        }
+        for (let dn of dirs) {
+            results.push(...walk(join(_dir, dn), _dn ? join(_dn, dn) : dn));
+        }
 
         return results;
     };

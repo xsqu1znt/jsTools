@@ -375,6 +375,7 @@ __export(file_exports, {
   readDir: () => readDir
 });
 import fs from "node:fs";
+import { join } from "node:path";
 function readDir(path, options) {
   const _options = { recursive: true, ...options };
   if (!fs.existsSync(path)) return [];
@@ -382,11 +383,15 @@ function readDir(path, options) {
   const walk = (_dir, _dn) => {
     let results = [];
     let directory = fs.readdirSync(_dir);
-    let file_stats = directory.map((fn) => fs.statSync(`${_dir}/${fn}`));
+    let file_stats = directory.map((fn) => fs.statSync(join(_dir, fn)));
     let files = directory.filter((fn, idx) => file_stats[idx].isFile());
     let dirs = directory.filter((fn, idx) => file_stats[idx].isDirectory());
-    for (let fn of files) results.push(`${_dn ? `${_dn}/` : ""}${fn}`);
-    for (let dn of dirs) results.push(...walk(`${_dir}/${dn}`, dn));
+    for (let fn of files) {
+      results.push(_dn ? join(_dn, fn) : fn);
+    }
+    for (let dn of dirs) {
+      results.push(...walk(join(_dir, dn), _dn ? join(_dn, dn) : dn));
+    }
     return results;
   };
   return walk(path);
