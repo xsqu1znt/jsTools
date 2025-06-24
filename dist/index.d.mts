@@ -231,15 +231,15 @@ declare function formatMemory(bytes: number, decimals?: number, units?: [string,
  * @param path Path to the nested property within the object. */
 declare function getProp(obj: {}, path: string): any;
 
-/** Choose a psuedo-random number within a min-max range.
+/** Choose a pseudo-random number within a min-max range.
  * @param min Minimum value.
  * @param max Maximum value.
  * @param round Round up the sum. */
 declare function randomNumber(min: number, max: number, round?: boolean): number;
-/** Create a psuedo-random string of numbers [0-9] for the given length.
+/** Create a pseudo-random string of numbers [0-9] for the given length.
  * @param len The length of the string. */
 declare function numberString(len: number): string;
-/** Create a psuedo-random string of letters [a-zA-Z] for the given length.
+/** Create a pseudo-random string of letters [a-zA-Z] for the given length.
  * @param len The length of the string.
  * @param includeUpper Include uppercase letters in the string. Default is `false`. */
 declare function alphaString(len: number, includeUpper?: boolean): string;
@@ -247,14 +247,14 @@ declare function alphaString(len: number, includeUpper?: boolean): string;
  * @param len The length of the string.
  * @param includeUpper Include uppercase letters in the string. Default is `false`. */
 declare function alphaNumericString(len: number, includeUpper?: boolean): string;
-/** Create a psuedo-random chance based on the given percentage.
+/** Create a pseudo-random chance based on the given percentage.
  * @param percent The percentage chance of success. Must be between 1 and 100. Default is `50`.*/
 declare function chance(percent?: number): boolean;
-/** Choose a psuedo-random item from an array.
+/** Choose a pseudo-random item from an array.
  * @param arr Array of items to choose from.
  * @param copy Return a deep copy of the array using {@link structuredClone}. */
 declare function choice<T>(arr: T[], copy?: boolean): T;
-/** Return a psuedo-random index from the given array.
+/** Return a pseudo-random index from the given array.
  * @param arr The array to generate an index for. */
 declare function choiceIndex(arr: any[]): number;
 /** Choose a pseudo-random item from an array by weighted rarity.

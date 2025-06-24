@@ -12,7 +12,7 @@ const alphabet = [
     "y", "z"
 ];
 
-/** Choose a psuedo-random number within a min-max range.
+/** Choose a pseudo-random number within a min-max range.
  * @param min Minimum value.
  * @param max Maximum value.
  * @param round Round up the sum. */
@@ -21,7 +21,7 @@ export function randomNumber(min: number, max: number, round: boolean = true): n
     return round ? Math.round(sum) : sum;
 }
 
-/** Create a psuedo-random string of numbers [0-9] for the given length.
+/** Create a pseudo-random string of numbers [0-9] for the given length.
  * @param len The length of the string. */
 export function numberString(len: number): string {
     let str = "";
@@ -29,7 +29,7 @@ export function numberString(len: number): string {
     return str;
 }
 
-/** Create a psuedo-random string of letters [a-zA-Z] for the given length.
+/** Create a pseudo-random string of letters [a-zA-Z] for the given length.
  * @param len The length of the string.
  * @param includeUpper Include uppercase letters in the string. Default is `false`. */
 export function alphaString(len: number, includeUpper: boolean = false): string {
@@ -50,14 +50,14 @@ export function alphaNumericString(len: number, includeUpper: boolean = false): 
     return str;
 }
 
-/** Create a psuedo-random chance based on the given percentage.
+/** Create a pseudo-random chance based on the given percentage.
  * @param percent The percentage chance of success. Must be between 1 and 100. Default is `50`.*/
 export function chance(percent: number = 50): boolean {
     if (percent < 1 || percent > 100) throw new Error(`\`${percent}\` must be within a range of 1 and 100`);
     return randomNumber(0, 100) < percent;
 }
 
-/** Choose a psuedo-random item from an array.
+/** Choose a pseudo-random item from an array.
  * @param arr Array of items to choose from.
  * @param copy Return a deep copy of the array using {@link structuredClone}. */
 export function choice<T>(arr: T[], copy: boolean = false): T {
@@ -65,7 +65,7 @@ export function choice<T>(arr: T[], copy: boolean = false): T {
     return copy ? structuredClone(item) : item;
 }
 
-/** Return a psuedo-random index from the given array.
+/** Return a pseudo-random index from the given array.
  * @param arr The array to generate an index for. */
 export function choiceIndex(arr: any[]): number {
     return randomNumber(0, arr.length - 1);
