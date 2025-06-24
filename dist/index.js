@@ -32,7 +32,7 @@ var index_exports = {};
 __export(index_exports, {
   ItemsCache: () => ItemsCache,
   LoopInterval: () => LoopInterval,
-  alphaNumbericString: () => alphaNumbericString,
+  alphaNumericString: () => alphaNumericString,
   alphaString: () => alphaString,
   betterMap: () => betterMap,
   chance: () => chance,
@@ -468,7 +468,7 @@ function readDir(path, options) {
 // src/random.ts
 var random_exports = {};
 __export(random_exports, {
-  alphaNumbericString: () => alphaNumbericString,
+  alphaNumericString: () => alphaNumericString,
   alphaString: () => alphaString,
   chance: () => chance,
   choice: () => choice,
@@ -519,7 +519,7 @@ function alphaString(len, includeUpper = false) {
   for (let i = 0; i < len; i++) str += includeUpper && chance() ? choice(alphabet).toUpperCase() : choice(alphabet);
   return str;
 }
-function alphaNumbericString(len, includeUpper = false) {
+function alphaNumericString(len, includeUpper = false) {
   let str = "";
   for (let i = 0; i < len; i++) {
     const char = chance() ? choice(alphabet) : randomNumber(0, 9).toString();
@@ -540,7 +540,7 @@ function choiceIndex(arr) {
 }
 function choiceWeighted(arr, path = "", copy = false) {
   let weights = betterMap(arr, (item2, { lastElement }) => {
-    const prop = path ? getProp(item2, path) : item2;
+    const prop = path.length ? getProp(item2, path) : item2;
     if (typeof prop !== "number") throw new TypeError(`\`${path}\` must lead to a number property in the array`);
     return prop + (lastElement || 0);
   });
@@ -813,7 +813,7 @@ var index_default = { ...async_exports, ...array_exports, ...date_exports, ...fi
 0 && (module.exports = {
   ItemsCache,
   LoopInterval,
-  alphaNumbericString,
+  alphaNumericString,
   alphaString,
   betterMap,
   chance,

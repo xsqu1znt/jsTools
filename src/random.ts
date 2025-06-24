@@ -13,8 +13,8 @@ const alphabet = [
 ];
 
 /** Choose a psuedo-random number within a min-max range.
- * @param minimum Minimum value.
- * @param maximum Maximum value.
+ * @param min Minimum value.
+ * @param max Maximum value.
  * @param round Round up the sum. */
 export function randomNumber(min: number, max: number, round: boolean = true): number {
     let sum = min + (max - min) * Math.random();
@@ -41,7 +41,7 @@ export function alphaString(len: number, includeUpper: boolean = false): string 
 /** Create a pseudo-random alphanumeric string [a-zA-Z0-9] of the specified length.
  * @param len The length of the string.
  * @param includeUpper Include uppercase letters in the string. Default is `false`. */
-export function alphaNumbericString(len: number, includeUpper: boolean = false): string {
+export function alphaNumericString(len: number, includeUpper: boolean = false): string {
     let str = "";
     for (let i = 0; i < len; i++) {
         const char = (chance() ? choice(alphabet) : randomNumber(0, 9).toString());
@@ -71,14 +71,14 @@ export function choiceIndex(arr: any[]): number {
     return randomNumber(0, arr.length - 1);
 }
 
-/** Choose a psuedo-random item from an array by weighted rarity.
+/** Choose a pseudo-random item from an array by weighted rarity.
  * @param arr The array of items to choose from.
- * @param path The nested property path to calculate weights. By default, the item at the current index is used.
+ * @param path The nested property path to calculate weights. By default, the item in the current index is used.
  * @param copy Whether to return a copy of the chosen item. Default is `false`. */
 export function choiceWeighted<T extends any[]>(arr: T, path = "", copy = false): T[number] {
     // Calculate the weight of each element in the array
     let weights = betterMap(arr, (item, { lastElement }) => {
-        const prop: any = path ? getProp(item, path) : item;
+        const prop: any = path.length ? getProp(item, path) : item;
         if (typeof prop !== "number") throw new TypeError(`\`${path}\` must lead to a number property in the array`);
         return (prop as number) + (lastElement || 0);
     });
@@ -87,7 +87,7 @@ export function choiceWeighted<T extends any[]>(arr: T, path = "", copy = false)
     const decider = Math.random() * weights[weights.length - 1];
 
     // Returns the first item in the original array that has a rarity higher than or equal to decider
-    /* NOTE: how this picks a random item from that rarity I still have no idea but at least it's less work for me, lol */
+    /* NOTE: how this picks a random item from that rarity I still have no idea, but at least it's less work for me, lol */
     const item = arr[weights.findIndex(w => w >= decider)];
     return copy ? structuredClone(item) : item;
 }
