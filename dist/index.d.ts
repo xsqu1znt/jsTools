@@ -230,7 +230,14 @@ declare function formatMemory(bytes: number, decimals?: number, units?: [string,
  * @param obj The object.
  * @param path Path to the nested property within the object. */
 declare function getProp(obj: {}, path: string): any;
+declare function unwrapEnum<T extends Record<string, string | number>>(enumObj: T): {
+    name: string;
+    value: number;
+}[];
 
+declare class SecureRandom {
+    static float(): number;
+}
 /** Choose a pseudo-random number within a min-max range.
  * @param min Minimum value.
  * @param max Maximum value.
@@ -262,6 +269,7 @@ declare function choiceIndex(arr: any[]): number;
  * @param path The nested property path to calculate weights. By default, the item in the current index is used.
  * @param copy Whether to return a copy of the chosen item. Default is `false`. */
 declare function choiceWeighted<T extends any[]>(arr: T, path?: string, copy?: boolean): T[number];
+declare function choiceProbability<T extends Record<string, any>, P extends keyof T>(items: T[], path: P, copy?: boolean): T | null;
 
 /** Escape all special regex characters in the given string.
  * @param str - The string to escape. */
@@ -415,7 +423,7 @@ declare class ItemsCache<T extends any[]> {
     pull(key: string | number, fn: (item: T[number]) => boolean): void;
 }
 
-declare const _default: {
+declare const jsTools: {
     LoopInterval: typeof LoopInterval;
     ItemsCache: typeof ItemsCache;
     escapeRegex(str: string): string;
@@ -431,7 +439,13 @@ declare const _default: {
     choice<T>(arr: T[], copy?: boolean): T;
     choiceIndex(arr: any[]): number;
     choiceWeighted<T extends any[]>(arr: T, path?: string, copy?: boolean): T[number];
+    choiceProbability<T extends Record<string, any>, P extends keyof T>(items: T[], path: P, copy?: boolean): T | null;
+    SecureRandom: typeof SecureRandom;
     getProp(obj: {}, path: string): any;
+    unwrapEnum<T extends Record<string, string | number>>(enumObj: T): {
+        name: string;
+        value: number;
+    }[];
     sum(arr: number[], options?: SumOptions): number;
     clamp(num: number, max: number): number;
     clamp(num: number, range: {
@@ -469,4 +483,4 @@ declare const _default: {
     sleep(ms: string | number): Promise<void>;
 };
 
-export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, type ItemCacheOptions, ItemsCache, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, type SumOptions, type ToMapCallback, alphaNumericString, alphaString, betterMap, chance, choice, choiceIndex, choiceWeighted, chunk, clamp, _default as default, escapeRegex, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getFlagSubstring, getProp, hasFlag, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique };
+export { type AnyFunc, type BetterMapCallback, type DeepPartial, type ETAOptions, type ForceArrayOptions, type ForcedArray, type ItemCacheOptions, ItemsCache, LoopInterval, type LoopIntervalCallback, type MasterCache, type NonNullableForcedArray, type ParseTimeOptions, type PerishableItem, type PerishableOptions, type ReadDirOptions, SecureRandom, type SumOptions, type ToMapCallback, alphaNumericString, alphaString, betterMap, chance, choice, choiceIndex, choiceProbability, choiceWeighted, chunk, clamp, jsTools as default, escapeRegex, eta, etaDigital, etaHMS, etaYMDHMS, forceArray, formatLargeNumber, formatMemory, formatThousands, getFlagSubstring, getProp, hasFlag, inRange, msToSec, numberString, parseTime, percent, randomNumber, readDir, secToMs, sleep, sum, toLeet, toMap, toOrdinal, toTitleCase, unique, unwrapEnum };

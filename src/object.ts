@@ -50,3 +50,12 @@ export function getProp(obj: {}, path: string): any {
 
     return _obj;
 }
+
+export function unwrapEnum<T extends Record<string, string | number>>(enumObj: T) {
+    return Object.entries(enumObj)
+        .filter(([key]) => isNaN(Number(key))) // Filter out reverse mappings
+        .map(([key, value]) => ({
+            name: key,
+            value: value as number
+        }));
+}

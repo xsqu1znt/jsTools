@@ -20,4 +20,5 @@ import * as string from "./string";
 import * as utils from "./utils";
 import * as types from "./types";
 
-export default { ...async, ...array, ...date, ...file, ...number, ...object, ...random, ...string, ...utils, ...types };
+const jsTools = { ...async, ...array, ...date, ...file, ...number, ...object, ...random, ...string, ...utils, ...types };
+export default jsTools;

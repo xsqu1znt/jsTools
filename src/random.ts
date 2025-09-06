@@ -1,5 +1,6 @@
-import { getProp } from "./object";
+import { randomBytes } from "node:crypto";
 import { betterMap } from "./array";
+import { getProp } from "./object";
 
 // prettier-ignore
 const alphabet = [
@@ -11,6 +12,14 @@ const alphabet = [
     "u", "v", "w", "x",
     "y", "z"
 ];
+
+export class SecureRandom {
+    static float() {
+        const buffer = randomBytes(4);
+        const randomInt = buffer.readUInt32BE(0);
+        return randomInt / (0xffffffff + 1);
+    }
+}
 
 /** Choose a pseudo-random number within a min-max range.
  * @param min Minimum value.
@@ -44,7 +53,7 @@ export function alphaString(len: number, includeUpper: boolean = false): string 
 export function alphaNumericString(len: number, includeUpper: boolean = false): string {
     let str = "";
     for (let i = 0; i < len; i++) {
-        const char = (chance() ? choice(alphabet) : randomNumber(0, 9).toString());
+        const char = chance() ? choice(alphabet) : randomNumber(0, 9).toString();
         str += includeUpper && chance() ? char.toUpperCase() : char;
     }
     return str;
@@ -90,4 +99,57 @@ export function choiceWeighted<T extends any[]>(arr: T, path = "", copy = false)
     /* NOTE: how this picks a random item from that rarity I still have no idea, but at least it's less work for me, lol */
     const item = arr[weights.findIndex(w => w >= decider)];
     return copy ? structuredClone(item) : item;
+}
+
+export function choiceProbability<T extends Record<string, any>, P extends keyof T>(
+    items: T[],
+    path: P,
+    copy?: boolean
+): T | null {
+    if (!items.length) return null;
+
+    /* Filter out non-numbers and 0 weight */
+    const validItems = items.filter(i => !isNaN(i[path]) && i[path]);
+    if (!validItems.length) return null;
+
+    // Validate range
+    for (const item of validItems) {
+        if (item[path] < 0 || item[path] > 1) {
+            throw new Error(`Weight ${item[path]} is out of range [0, 1]`);
+        }
+    }
+
+    // Generate the probability
+    const probability = SecureRandom.float();
+
+    /* Pick candidates from the item array that are weight >= probability */
+    const candidates: T[] = [];
+    for (const item of validItems) {
+        if (probability <= item[path]) {
+            candidates.push(item);
+        }
+    }
+
+    // Sort by weight ascending (lowest first) to get items closest to probability
+    candidates.sort((a, b) => a[path] - b[path]);
+
+    // Get the lowest weight among candidates (closest to probability threshold)
+    const lowestWeight = candidates[0]?.[path];
+
+    // Filter to only items with the lowest weight (most precise rarity match)
+    const closestCandidates = candidates.filter(item => item[path] === lowestWeight);
+
+    // Pick the result
+    let result: T =
+        closestCandidates.length > 1
+            ? (closestCandidates[Math.floor(SecureRandom.float() * closestCandidates.length)] as T)
+            : (closestCandidates[0] as T);
+
+    // Fallback to guarantee the most common item
+    result ??= validItems.reduce((prev, curr) => {
+        return prev[path] > curr[path] ? prev : curr;
+    });
+
+    // Return the result
+    return copy ? structuredClone(result) : result;
 }

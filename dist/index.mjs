@@ -39,7 +39,8 @@ __export(number_exports, {
 // src/object.ts
 var object_exports = {};
 __export(object_exports, {
-  getProp: () => getProp
+  getProp: () => getProp,
+  unwrapEnum: () => unwrapEnum
 });
 function getProp(obj, path) {
   let _obj = obj;
@@ -57,6 +58,12 @@ function getProp(obj, path) {
     }
   }
   return _obj;
+}
+function unwrapEnum(enumObj) {
+  return Object.entries(enumObj).filter(([key]) => isNaN(Number(key))).map(([key, value]) => ({
+    name: key,
+    value
+  }));
 }
 
 // src/number.ts
@@ -400,15 +407,18 @@ function readDir(path, options) {
 // src/random.ts
 var random_exports = {};
 __export(random_exports, {
+  SecureRandom: () => SecureRandom,
   alphaNumericString: () => alphaNumericString,
   alphaString: () => alphaString,
   chance: () => chance,
   choice: () => choice,
   choiceIndex: () => choiceIndex,
+  choiceProbability: () => choiceProbability,
   choiceWeighted: () => choiceWeighted,
   numberString: () => numberString,
   randomNumber: () => randomNumber
 });
+import { randomBytes } from "node:crypto";
 var alphabet = [
   "a",
   "b",
@@ -437,6 +447,13 @@ var alphabet = [
   "y",
   "z"
 ];
+var SecureRandom = class {
+  static float() {
+    const buffer = randomBytes(4);
+    const randomInt = buffer.readUInt32BE(0);
+    return randomInt / (4294967295 + 1);
+  }
+};
 function randomNumber(min, max, round = true) {
   let sum2 = min + (max - min) * Math.random();
   return round ? Math.round(sum2) : sum2;
@@ -479,6 +496,31 @@ function choiceWeighted(arr, path = "", copy = false) {
   const decider = Math.random() * weights[weights.length - 1];
   const item = arr[weights.findIndex((w) => w >= decider)];
   return copy ? structuredClone(item) : item;
+}
+function choiceProbability(items, path, copy) {
+  if (!items.length) return null;
+  const validItems = items.filter((i) => !isNaN(i[path]) && i[path]);
+  if (!validItems.length) return null;
+  for (const item of validItems) {
+    if (item[path] < 0 || item[path] > 1) {
+      throw new Error(`Weight ${item[path]} is out of range [0, 1]`);
+    }
+  }
+  const probability = SecureRandom.float();
+  const candidates = [];
+  for (const item of validItems) {
+    if (probability <= item[path]) {
+      candidates.push(item);
+    }
+  }
+  candidates.sort((a, b) => a[path] - b[path]);
+  const lowestWeight = candidates[0]?.[path];
+  const closestCandidates = candidates.filter((item) => item[path] === lowestWeight);
+  let result = closestCandidates.length > 1 ? closestCandidates[Math.floor(SecureRandom.float() * closestCandidates.length)] : closestCandidates[0];
+  result ??= validItems.reduce((prev, curr) => {
+    return prev[path] > curr[path] ? prev : curr;
+  });
+  return copy ? structuredClone(result) : result;
 }
 
 // src/string.ts
@@ -740,16 +782,19 @@ var ItemsCache = class {
 var types_exports = {};
 
 // src/index.ts
-var index_default = { ...async_exports, ...array_exports, ...date_exports, ...file_exports, ...number_exports, ...object_exports, ...random_exports, ...string_exports, ...utils_exports, ...types_exports };
+var jsTools = { ...async_exports, ...array_exports, ...date_exports, ...file_exports, ...number_exports, ...object_exports, ...random_exports, ...string_exports, ...utils_exports, ...types_exports };
+var index_default = jsTools;
 export {
   ItemsCache,
   LoopInterval,
+  SecureRandom,
   alphaNumericString,
   alphaString,
   betterMap,
   chance,
   choice,
   choiceIndex,
+  choiceProbability,
   choiceWeighted,
   chunk,
   clamp,
@@ -780,5 +825,6 @@ export {
   toMap,
   toOrdinal,
   toTitleCase,
-  unique
+  unique,
+  unwrapEnum
 };
