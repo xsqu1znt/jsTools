@@ -108,21 +108,48 @@ export function choiceProbability<T extends Record<string, any>, P extends keyof
 ): T | null {
     if (!items.length) return null;
 
-    const cumulativeProbabilities = items.reduce((acc, item, index) => {
-        const probability = item[path];
-        const cumulativeProbability = index === 0 ? probability : acc[index - 1] + probability;
-        return [...acc, cumulativeProbability];
-    }, [] as number[]);
+    /* Filter out non-numbers and 0 weight */
+    const validItems = items.filter(i => !isNaN(i[path]) && i[path]);
+    if (!validItems.length) return null;
 
-    const randomFloat = SecureRandom.float();
-    const selectedIndex = cumulativeProbabilities.findIndex((probability, index) => {
-        return probability >= randomFloat;
-    });
-
-    if (selectedIndex === -1) {
-        return null;
+    // Validate range
+    for (const item of validItems) {
+        if (item[path] < 0 || item[path] > 1) {
+            throw new Error(`Weight ${item[path]} is out of range [0, 1]`);
+        }
     }
 
-    const selectedItem = items[selectedIndex];
-    return copy ? structuredClone(selectedItem) : selectedItem;
+    // Generate the probability
+    const probability = SecureRandom.float();
+
+    /* Pick candidates from the item array that are weight >= probability */
+    const candidates: T[] = [];
+    for (const item of validItems) {
+        if (probability <= item[path]) {
+            candidates.push(item);
+        }
+    }
+
+    // Sort by weight ascending (lowest first) to get items closest to probability
+    candidates.sort((a, b) => a[path] - b[path]);
+
+    // Get the lowest weight among candidates (closest to probability threshold)
+    const lowestWeight = candidates[0]?.[path];
+
+    // Filter to only items with the lowest weight (most precise rarity match)
+    const closestCandidates = candidates.filter(item => item[path] === lowestWeight);
+
+    // Pick the result
+    let result: T =
+        closestCandidates.length > 1
+            ? (closestCandidates[Math.floor(SecureRandom.float() * closestCandidates.length)] as T)
+            : (closestCandidates[0] as T);
+
+    // Fallback to guarantee the most common item
+    result ??= validItems.reduce((prev, curr) => {
+        return prev[path] > curr[path] ? prev : curr;
+    });
+
+    // Return the result
+    return copy ? structuredClone(result) : result;
 }

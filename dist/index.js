@@ -570,20 +570,28 @@ function choiceWeighted(arr, path = "", copy = false) {
 }
 function choiceProbability(items, path, copy) {
   if (!items.length) return null;
-  const cumulativeProbabilities = items.reduce((acc, item, index) => {
-    const probability = item[path];
-    const cumulativeProbability = index === 0 ? probability : acc[index - 1] + probability;
-    return [...acc, cumulativeProbability];
-  }, []);
-  const randomFloat = SecureRandom.float();
-  const selectedIndex = cumulativeProbabilities.findIndex((probability, index) => {
-    return probability >= randomFloat;
-  });
-  if (selectedIndex === -1) {
-    return null;
+  const validItems = items.filter((i) => !isNaN(i[path]) && i[path]);
+  if (!validItems.length) return null;
+  for (const item of validItems) {
+    if (item[path] < 0 || item[path] > 1) {
+      throw new Error(`Weight ${item[path]} is out of range [0, 1]`);
+    }
   }
-  const selectedItem = items[selectedIndex];
-  return copy ? structuredClone(selectedItem) : selectedItem;
+  const probability = SecureRandom.float();
+  const candidates = [];
+  for (const item of validItems) {
+    if (probability <= item[path]) {
+      candidates.push(item);
+    }
+  }
+  candidates.sort((a, b) => a[path] - b[path]);
+  const lowestWeight = candidates[0]?.[path];
+  const closestCandidates = candidates.filter((item) => item[path] === lowestWeight);
+  let result = closestCandidates.length > 1 ? closestCandidates[Math.floor(SecureRandom.float() * closestCandidates.length)] : closestCandidates[0];
+  result ??= validItems.reduce((prev, curr) => {
+    return prev[path] > curr[path] ? prev : curr;
+  });
+  return copy ? structuredClone(result) : result;
 }
 
 // src/string.ts
